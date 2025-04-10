@@ -137,7 +137,7 @@ public class Analyzer {
 						sourceChar.pollFirst();
 						state = STATE_DIVIDE;
 					}else if(c == ';'){
-						//sourceChar.pollFirst();
+						sourceChar.pollFirst();
 						state = STATE_SEMICOLON;
 					}else if(c == ','){
 						sourceChar.pollFirst();
