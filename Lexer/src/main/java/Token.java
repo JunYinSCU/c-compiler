@@ -37,6 +37,7 @@ public class Token {
 	}
 
 	public int getColum() { return column; }
+	
 	public void setColumn(int column) { this.column = column; }
 
 	public Token(String type, String value,int row,int column) {

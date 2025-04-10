@@ -1,6 +1,6 @@
 int a=1;
-/* hhh
-nihao   a
+/* hello compiler!
+author   YinJun
 */
 
 void sum (int a,int b)
@@ -13,5 +13,5 @@ void sum (int a,int b)
 
 while( a[0] == 0)
 {
-    a[0] * 1 / 1 + 1 - 1;
+    a[0] * 4 / 2 + 3 - 1;
 }
