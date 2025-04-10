@@ -6,9 +6,6 @@ public class Production {
 	private int[] numOfP={1,3,1,3,1,3,1};
 	private Vector<String> productionList=new Vector<String>();
 
-	/**
-	 * 
-	 */
 	public Production() {
 		for(String st:productions)
 			productionList.addElement(st);

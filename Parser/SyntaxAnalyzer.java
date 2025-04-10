@@ -7,15 +7,7 @@ import java.util.LinkedList;
 import java.util.Stack;
 import java.util.Vector;
 
-/**
- * 
- */
-
-/**
- * @author zhongfang
- * 
- */
-public class SyntaxAnanlyzer {
+public class SyntaxAnalyzer {
 
 	private String temp1;
 	private LinkedList<Character> list1 = new LinkedList<Character>();
@@ -40,7 +32,7 @@ public class SyntaxAnanlyzer {
 			{ "r5", "r5", "", "r5", "", "r5", "", "", "" },// 11
 	};
 
-	public SyntaxAnanlyzer() {
+	public SyntaxAnalyzer() {
 		try {
 			output = new BufferedWriter(new FileWriter("output.txt"));
 		} catch (IOException e) {
@@ -60,7 +52,7 @@ public class SyntaxAnanlyzer {
 				stack2.clear();
 				sequenceOfP.clear();
 				temp1 = lString.trim();
-				temp1.replaceAll("\\s+", "");// È¥µôÒ»¸öÒÔÉÏµÄ¿Õ°×·û£¬ÓÃÒ»¸ö¿Õ°×´úÌæ
+				temp1.replaceAll("\\s+", "");// å»æ‰ä¸€ä¸ªä»¥ä¸Šçš„ç©ºç™½ç¬¦ï¼Œç”¨ä¸€ä¸ªç©ºç™½ä»£æ›¿
 				a = temp1.toCharArray();
 				for (char _char : a) {
 					list1.offer(_char);
@@ -72,9 +64,9 @@ public class SyntaxAnanlyzer {
 				output.newLine();
 				boolean b = analysis();
 				if (b){
-					output.write("Õâ¸öÊäÈë·ûºÏÉè¶¨µÄSLR(1)ÎÄ·¨");
+					output.write("è¿™ä¸ªè¾“å…¥ç¬¦åˆè®¾å®šçš„SLR(1)æ–‡æ³•");
 					output.newLine();
-					output.write("²úÉúÊ½Ë³ĞòÈçÏÂ£º(bottom-up)");
+					output.write("äº§ç”Ÿå¼é¡ºåºå¦‚ä¸‹ï¼š(bottom-up)");
 					output.newLine();
 					for(int i=0;i<sequenceOfP.size();i++){
 						Integer n=sequenceOfP.get(i);
@@ -83,12 +75,12 @@ public class SyntaxAnanlyzer {
 					}
 				}
 				else
-					output.write("Õâ¸öÊäÈë²»·ûºÏÉè¶¨µÄSLR(1)ÎÄ·¨");
+					output.write("è¿™ä¸ªè¾“å…¥ä¸ç¬¦åˆè®¾å®šçš„SLR(1)æ–‡æ³•");
 				output.write("-----------------------------------------");
 				output.newLine();
 			}
 		} catch (Exception e) {
-		} finally { // ¹Ø±Õ×ÊÔ´
+		} finally { // å…³é—­èµ„æº
 			if (bufferedReader != null)
 				try {
 					bufferedReader.close();
@@ -103,7 +95,7 @@ public class SyntaxAnanlyzer {
 		}
 	}
 
-	public int getOrder(char c) {        //»ñÈ¡·ûºÅ£¨ÖÕ½á·û»ò·ÇÖÕ½á·û£©µÄ±àºÅ£¨·ûºÅ±íÖĞµÄºáÏòË³Ğò£©
+	public int getOrder(char c) {        //è·å–ç¬¦å·ï¼ˆç»ˆç»“ç¬¦æˆ–éç»ˆç»“ç¬¦ï¼‰çš„ç¼–å·ï¼ˆç¬¦å·è¡¨ä¸­çš„æ¨ªå‘é¡ºåºï¼‰
 		if (c == '+')
 			return 0;
 		else if (c == '*')
@@ -126,7 +118,7 @@ public class SyntaxAnanlyzer {
 			return -1;
 	}
 
-	public void display() {          //¶ÁSymbolStack¡¢StateStackºÍinputÀïµÄËùÓĞ×Ö·û£¬ÏÔÊ¾µ½Êä³öÎÄ¼ş
+	public void display() {          //è¯»SymbolStackã€StateStackå’Œinputé‡Œçš„æ‰€æœ‰å­—ç¬¦ï¼Œæ˜¾ç¤ºåˆ°è¾“å‡ºæ–‡ä»¶
 		String symbols = "";
 		String states = "";
 		String input = "";
@@ -160,7 +152,7 @@ public class SyntaxAnanlyzer {
 			actions = "";
 			char c = list1.peekFirst();
 			int i = getOrder(c);
-			if(i==-1)                //Èç¹ûÊäÈëÊÇ³ıÁË¹æ¶¨µÄÖÕ½á·ûºÍ·ÇÖÕ½á·ûÒÔÍâµÄ·ûºÅ£¬·µ»Øfalse
+			if(i==-1)                //å¦‚æœè¾“å…¥æ˜¯é™¤äº†è§„å®šçš„ç»ˆç»“ç¬¦å’Œéç»ˆç»“ç¬¦ä»¥å¤–çš„ç¬¦å·ï¼Œè¿”å›false
 				return false;
 			String string2 = table[stack2.peek()][i];
 			if (string2.trim().equals("".trim()))
@@ -169,33 +161,33 @@ public class SyntaxAnanlyzer {
 				actions+="accept";
 				display();
 				return true;
-			} else if (string2.charAt(0) == 'S') { // ÒÆ½ø
-				String s = string2.substring(1); // È¡SºóÃæµÄ×´Ì¬Êı
+			} else if (string2.charAt(0) == 'S') { // ç§»è¿›
+				String s = string2.substring(1); // å–Såé¢çš„çŠ¶æ€æ•°
 				int n = Integer.parseInt(s);
 				System.out.println("Shift " + s);
 				actions += "Shift to state " + s;
 				display();
-				list1.pollFirst(); // ´ÓÊäÈë´øÀïµ¯³öµÚÒ»¸ö×Ö·û£¬²¢°Ñ¸Ã×Ö·ûËÍsymbolStack,Í¬Ê±ÏòStateStackÑ¹ÈëÈ¡µÃµÄ×´Ì¬Êı
+				list1.pollFirst(); // ä»è¾“å…¥å¸¦é‡Œå¼¹å‡ºç¬¬ä¸€ä¸ªå­—ç¬¦ï¼Œå¹¶æŠŠè¯¥å­—ç¬¦é€symbolStack,åŒæ—¶å‘StateStackå‹å…¥å–å¾—çš„çŠ¶æ€æ•°
 				stack2.push(n);
 				stack.push(c);
 
-			} else if (string2.charAt(0) == 'r') { // ¹æÔ¼
-				String s = string2.substring(1); // È¡rºóÃæµÄ²úÉúÊ½±àºÅ
+			} else if (string2.charAt(0) == 'r') { // è§„çº¦
+				String s = string2.substring(1); // å–råé¢çš„äº§ç”Ÿå¼ç¼–å·
 				int n = Integer.parseInt(s);
 				System.out.println("Reduce " + s);
 				actions += "Reduce by production " + s;
 				display();
 				sequenceOfP.addElement(n);
 
-				int n2 = production.getNumOfP(n);// È¡²úÉúÊ½ÓÒ²¿µÄ×Ö·û¸öÊı£¨Ó¦¸ÃÔÚSymbolStackºÍStateStackÖĞµ¯³öÀ´µÄ¸öÊı£©
+				int n2 = production.getNumOfP(n);// å–äº§ç”Ÿå¼å³éƒ¨çš„å­—ç¬¦ä¸ªæ•°ï¼ˆåº”è¯¥åœ¨SymbolStackå’ŒStateStackä¸­å¼¹å‡ºæ¥çš„ä¸ªæ•°ï¼‰
 				for (int i1 = 0; i1 < n2; i1++) {
 					stack.pop();
 					stack2.pop();
 				}
 
-				char _char1 = production.getProduction(n).charAt(0);// »ñÈ¡²úÉúÊ½×ó±ßµÄ·ÇÖÕ½á·û£¬Ñ¹ÈëSymbolStack
+				char _char1 = production.getProduction(n).charAt(0);// è·å–äº§ç”Ÿå¼å·¦è¾¹çš„éç»ˆç»“ç¬¦ï¼Œå‹å…¥SymbolStack
 				stack.push(_char1);
-				String s1 = table[stack2.peek()][getOrder(_char1)];// ²éÕÒgoto×Ö±í£¬ÕÒµ½¸ÃÖÕ½á·ûºÍµ±Ç°×´Ì¬¶ÔÓ¦µÄ±àºÅ£¬Ñ¹ÈëStateStack
+				String s1 = table[stack2.peek()][getOrder(_char1)];// æŸ¥æ‰¾gotoå­—è¡¨ï¼Œæ‰¾åˆ°è¯¥ç»ˆç»“ç¬¦å’Œå½“å‰çŠ¶æ€å¯¹åº”çš„ç¼–å·ï¼Œå‹å…¥StateStack
 				if (s1.trim().equals(""))
 					return false;
 				else
@@ -204,12 +196,9 @@ public class SyntaxAnanlyzer {
 		}
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		SyntaxAnanlyzer ananlyzer = new SyntaxAnanlyzer();
-		ananlyzer.getText();
+		SyntaxAnalyzer analyzer = new SyntaxAnalyzer();
+		analyzer.getText();
 	}
 
 }

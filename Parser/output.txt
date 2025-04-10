@@ -18,8 +18,8 @@ state	 symbol	 input	 action
 0169710	$E+T*F	$	Reduce by production 3
 0169	$E+T	$	Reduce by production 1
 01	$E	$	accept
-这个输入符合设定的SLR(1)文法
-产生式顺序如下：(bottom-up)
+杩欎釜杈撳叆绗﹀悎璁惧畾鐨凷LR(1)鏂囨硶
+浜х敓寮忛『搴忓涓嬶細(bottom-up)
 F->i
 T->F
 E->T
@@ -38,4 +38,4 @@ state	 symbol	 input	 action
 03	$F	++$	Reduce by production 4
 02	$T	++$	Reduce by production 2
 01	$E	++$	Shift to state 6
-这个输入不符合设定的SLR(1)文法-----------------------------------------
+杩欎釜杈撳叆涓嶇鍚堣瀹氱殑SLR(1)鏂囨硶-----------------------------------------
