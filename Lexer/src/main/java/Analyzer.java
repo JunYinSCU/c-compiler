@@ -106,14 +106,6 @@ public class Analyzer {
 		output.newLine();
 	}
 
-	private void outPutToken(String type, String value, int row,int column) throws IOException {
-		Token token = new Token(type, value, row, column);
-		tokens.add(token);
-		//System.out.println(token);
-		output.write(token.toString());
-		output.newLine();
-	}
-
 	public void start(){	//词法分析器的入口函数
 		getText();
 	}
