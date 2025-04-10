@@ -3,7 +3,7 @@
 < OPERATOR_ASSIGN , = , (1 , 5) >
 < NUM , 1 , (1 , 6) >
 < SEPARATOR_SEMICOLON , ; , (1 , 7) >
-< COMMENT , hhh\n nihao   a\n , (2 , 0) >
+< COMMENT , hello compiler!\n @author   YinJun\n , (2 , 0) >
 < KEYWORD , void , (6 , 0) >
 < ID , sum , (6 , 5) >
 < SEPARATOR_LEFT_PARENTHESIS , ( , (6 , 9) >
@@ -49,18 +49,13 @@
 < NUM , 0 , (16 , 6) >
 < SEPARATOR_RIGHT_BRACKET , ] , (16 , 7) >
 < OPERATOR_MULTIPLY , * , (16 , 9) >
-< OPERATOR_DIVIDE , / , (16 , 9) >
-< NUM , 1 , (16 , 11) >
+< NUM , 4 , (16 , 11) >
 < OPERATOR_DIVIDE , / , (16 , 13) >
-< NUM , 1 , (16 , 15) >
+< NUM , 2 , (16 , 15) >
 < OPERATOR_PLUS , + , (16 , 17) >
-< OPERATOR_MINUS , - , (16 , 17) >
-< OPERATOR_MULTIPLY , * , (16 , 17) >
-< OPERATOR_DIVIDE , / , (16 , 17) >
-< NUM , 1 , (16 , 19) >
+< NUM , 3 , (16 , 19) >
 < OPERATOR_MINUS , - , (16 , 21) >
-< OPERATOR_MULTIPLY , * , (16 , 21) >
-< OPERATOR_DIVIDE , / , (16 , 21) >
 < NUM , 1 , (16 , 23) >
 < SEPARATOR_SEMICOLON , ; , (16 , 24) >
 < SEPARATOR_RIGHT_BRACE , } , (17 , 0) >
+非法字符:#

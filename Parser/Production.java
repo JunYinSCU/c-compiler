@@ -1,13 +1,5 @@
 import java.util.Vector;
 
-/**
- * 
- */
-
-/**
- * @author zhongfang
- *
- */
 public class Production {
 	
 	private String[] productions={"S'->E","E->E+T","E->T","T->T*F","T->F","F->(E)","F->i"};

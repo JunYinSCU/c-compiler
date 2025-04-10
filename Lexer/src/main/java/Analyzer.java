@@ -155,71 +155,89 @@ public class Analyzer {
 
 		//column为当前列号，用于读取当前处理字符
 		//注意：需要是<=当前长度，如果为<，则会出现最后一个字符无法处理的情况
-		column = 0;
-		while (column <= currentLine.length()) {	
-			char c = (column < currentLine.length()) ? currentLine.charAt(column) : (char) -1;	//如果到了最后，用一个特殊字符来标识
+		int index = 0;
+		while (index <= currentLine.length()) {	
+			char c = (index < currentLine.length()) ? currentLine.charAt(index) : (char) -1;	//如果到了最后，用一个特殊字符来标识
 
 			switch (state) {
 				case STATE_INITIAL:
-					if (Character.isLetter(c)) {					
+					if (Character.isLetter(c)) {
+						column = index;					
 						state = STATE_IDENTIFIER;
 						putCharToLexemeBuffer(c);	//如果是字母，则进入标识符状态，将字符放入lexemeBuffer
-					} else if (Character.isDigit(c)) {			
+					} else if (Character.isDigit(c)) {	
+						column = index;			
 						state = STATE_INTEGER;
 						putCharToLexemeBuffer(c);	//数字同理
-					} else if (c == '+') {					
+					} else if (c == '+') {	
+						column = index;					
 						state = STATE_PLUS;
-					} else if (c == '-') {			
+					} else if (c == '-') {	
+						column = index;			
 						state = STATE_MINUS;
-					} else if (c == '*') {						
+					} else if (c == '*') {	
+						column = index;						
 						state = STATE_MULTIPLY;
-					} else if (c == '/') {						
+					} else if (c == '/') {	
+						column = index;						
 						state = STATE_DIVIDE;
-					} else if (c == ';') {					
+					} else if (c == ';') {	
+						column = index;					
 						state = STATE_SEMICOLON;
-					} else if (c == ',') {					
+					} else if (c == ',') {	
+						column = index;					
 						state = STATE_COMMA;
-					} else if (c == '=') {					
+					} else if (c == '=') {	
+						column = index;					
 						state = STATE_EQUAL_START;
 					} else if (c == '>') {
+						column = index;	
 						state = STATE_GREAT_START;
 					} else if (c == '<') {
+						column = index;	
 						state = STATE_LESS_START;
 					} else if (c == '!') {
+						column = index;	
 						state = STATE_NOT_EQUAL;
 					} else if (c == '(') {
+						column = index;	
 						state = STATE_LEFT_PARENTHESIS;
 					} else if (c == ')') {
+						column = index;	
 						state = STATE_RIGHT_PARENTHESIS;
 					} else if (c == '{') {
+						column = index;	
 						state = STATE_LEFT_BRACE;
 					} else if (c == '}') {
+						column = index;	
 						state = STATE_RIGHT_BRACE;
 					} else if (c == '[') {
+						column = index;	
 						state = STATE_LEFT_BRACKET;
-					} else if (c == ']') {						
+					} else if (c == ']') {	
+						column = index;						
 						state = STATE_RIGHT_BRACKET;
 					} else {
-						if (column == currentLine.length()) {	//如果已经处理完最后一个字符了，那么直接跳过即可，序号++
-							column++;
+						if (index == currentLine.length()) {	//如果已经处理完最后一个字符了，那么直接跳过即可，序号++
+							index++;
 							break;
 						}
 						if (c != ' ') {		//如果不是空格，则无法识别，是非法字符。
-							System.out.print("非法字符");
-							output.write("非法字符");
+							System.out.println("非法字符:"+c);
+							output.write("非法字符:"+c);
 							output.newLine();
 							lexemeBuffer.clear();
 						}
 					}
-					column++;	//处理下一个字符
+					index++;	//处理下一个字符
 					break;
 
 				case STATE_IDENTIFIER:
 					if (Character.isLetter(c) || Character.isDigit(c)) {	//标识符必须是字母开头，但可以跟数字
 						putCharToLexemeBuffer(c);
 						state = STATE_IDENTIFIER;	//继续当前状态
-						column++;	//处理下一个字符
-					} else {	//如果不是字母数字，则说明标识符结束了，改变状态，但不要column++，因为当前的column出字符因不符合，还未识别处理
+						index++;	//处理下一个字符
+					} else {	//如果不是字母数字，则说明标识符结束了，改变状态，但不要index++，因为当前的index处字符因不符合，还未识别处理
 						state = STATE_IDENTIFIER_END;
 					}
 					break;
@@ -243,7 +261,7 @@ public class Analyzer {
 					if (Character.isDigit(c)) {
 						putCharToLexemeBuffer(c);
 						state = STATE_INTEGER;
-						column++;
+						index++;
 					} else {
 						state = STATE_INTEGER_END;
 					}
@@ -259,7 +277,7 @@ public class Analyzer {
 					break;
 
 				case STATE_PLUS:
-					//如果是各种操作符和分隔符，直接输出，没必要加入到lexemeBuffer中，注意也不要column增加
+					//如果是各种操作符和分隔符，直接输出，没必要加入到lexemeBuffer中，注意也不要index增加
 					Token plusToken = new Token("OPERATOR_PLUS", "+", row, column);
 					outPutToken(plusToken);
 					lexemeBuffer.clear();
@@ -286,8 +304,8 @@ public class Analyzer {
 						commentColumn = column;
 						state = STATE_IN_COMMENT;	//改变状态
 						commentBuffer = new StringBuilder();
-						column++;	//处理下一个字符，即为注释文本
-					} else {	//否则上一个字符就是单纯除法，直接处理即可，不要column++，因为还未识别当前字符具体类型
+						index++;	//处理下一个字符，即为注释文本
+					} else {	//否则上一个字符就是单纯除法，直接处理即可，不要index++，因为还未识别当前字符具体类型
 						Token divideToken = new Token("OPERATOR_DIVIDE", "/", row, column);
 						outPutToken(divideToken);
 						lexemeBuffer.clear();
@@ -312,8 +330,8 @@ public class Analyzer {
 				case STATE_EQUAL_START:
 					if (c == '=') {		//说明当前符号为==,改变状态，读取下一个字符
 						state = STATE_EQUAL_END;
-						column++;
-					} else {	//否则上一个字符就是简单的=，直接处理，不要column++，因为还没识别当前字符具体类型
+						index++;
+					} else {	//否则上一个字符就是简单的=，直接处理，不要index++，因为还没识别当前字符具体类型
 						Token equalToken = new Token("OPERATOR_ASSIGN", "=", row,column);
 						outPutToken(equalToken);
 						lexemeBuffer.clear();
@@ -332,7 +350,7 @@ public class Analyzer {
 					//同=和==的判断逻辑
 					if (c == '=') {
 						state = STATE_GREAT_EQUAL;
-						column++;
+						index++;
 					} else {
 						Token greatToken = new Token("OPERATOR_GREATER", ">", row,column);
 						outPutToken(greatToken);
@@ -351,7 +369,7 @@ public class Analyzer {
 				case STATE_LESS_START:
 					if (c == '=') {
 						state = STATE_LESS_EQUAL;
-						column++;
+						index++;
 					} else {
 						Token lessToken = new Token("OPERATOR_LESS", "<", row,column);
 						outPutToken(lessToken);
@@ -429,7 +447,7 @@ public class Analyzer {
 					} else {
 						commentBuffer.append(c);	//否则就是正常注释文本，添加到注释buffer中
 					}
-					column++;	//处理下一个字符
+					index++;	//处理下一个字符
 					break;
 
 				case STATE_COMMENT_END_STAR:
@@ -441,15 +459,15 @@ public class Analyzer {
 						commentBuffer.setLength(0);	//清空注释文本
 						state = STATE_INITIAL;
 						inMultilineComment = false;
-						column++;
+						index++;
 					} else if (c == '*') {	//如果是连续星号，则继续判断下一个字符是不是/
 						commentBuffer.append(c);
 						state = STATE_COMMENT_END_STAR;
-						column++;
+						index++;
 					} else {	//如果当前字符不是/ 或者 *，则说明前置的*是注释文本的一部分，将前置的*和当前字符都要加入
 						commentBuffer.append('*').append(c);
 						state = STATE_IN_COMMENT;
-						column++;
+						index++;
 					}
 					break;
 			}
