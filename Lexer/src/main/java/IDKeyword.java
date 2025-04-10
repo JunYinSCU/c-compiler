@@ -1,3 +1,5 @@
+package src.main.java;
+
 public class IDKeyword {
 	//c-语法关键字
 	private final static String keywords[] = {"else","if", "int", "return", "void", "while"};
