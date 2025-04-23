@@ -1,4 +1,3 @@
-package src.main.java;
 
 import java.util.LinkedList;
 
@@ -7,7 +6,7 @@ public class Main {
         String inputFile = "input.txt";
         String outputFile = "output.txt";
 
-        Analyzer analyzer = new Analyzer(inputFile,outputFile);
+        src.main.java.Analyzer analyzer = new src.main.java.Analyzer(inputFile,outputFile);
         analyzer.start();
 
         LinkedList<Token> tokens = analyzer.getTokens();
