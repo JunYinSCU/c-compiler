@@ -271,21 +271,21 @@ public class Analyzer {
 
 				case STATE_PLUS:
 					//如果是各种操作符和分隔符，直接输出，没必要加入到lexemeBuffer中，注意也不要index增加
-					Token plusToken = new Token("OPERATOR_PLUS", "+", row, column);
+					Token plusToken = new Token("OPERATOR", "+", row, column);
 					outPutToken(plusToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_MINUS:
-					Token minusToken = new Token("OPERATOR_MINUS", "-", row,column);
+					Token minusToken = new Token("OPERATOR", "-", row,column);
 					outPutToken(minusToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_MULTIPLY:
-					Token multiplyToken = new Token("OPERATOR_MULTIPLY", "*", row,column);
+					Token multiplyToken = new Token("OPERATOR", "*", row,column);
 					outPutToken(multiplyToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
@@ -299,7 +299,7 @@ public class Analyzer {
 						commentBuffer = new StringBuilder();
 						index++;	//处理下一个字符，即为注释文本
 					} else {	//否则上一个字符就是单纯除法，直接处理即可，不要index++，因为还未识别当前字符具体类型
-						Token divideToken = new Token("OPERATOR_DIVIDE", "/", row, column);
+						Token divideToken = new Token("OPERATOR", "/", row, column);
 						outPutToken(divideToken);
 						lexemeBuffer.clear();
 						state = STATE_INITIAL;
@@ -307,14 +307,14 @@ public class Analyzer {
 					break;
 
 				case STATE_SEMICOLON:
-					Token semicolonToken = new Token("SEPARATOR_SEMICOLON", ";", row,column);
+					Token semicolonToken = new Token("SEPARATOR", ";", row,column);
 					outPutToken(semicolonToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_COMMA:
-					Token commaToken = new Token("SEPARATOR_COMMA", ",", row,column);
+					Token commaToken = new Token("SEPARATOR", ",", row,column);
 					outPutToken(commaToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
@@ -325,7 +325,7 @@ public class Analyzer {
 						state = STATE_EQUAL_END;
 						index++;
 					} else {	//否则上一个字符就是简单的=，直接处理，不要index++，因为还没识别当前字符具体类型
-						Token equalToken = new Token("OPERATOR_ASSIGN", "=", row,column);
+						Token equalToken = new Token("OPERATOR", "=", row,column);
 						outPutToken(equalToken);
 						lexemeBuffer.clear();
 						state = STATE_INITIAL;
@@ -333,7 +333,7 @@ public class Analyzer {
 					break;
 
 				case STATE_EQUAL_END:
-					Token equalEndToken = new Token("OPERATOR_EQUAL", "==", row,column);
+					Token equalEndToken = new Token("OPERATOR", "==", row,column);
 					outPutToken(equalEndToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
@@ -345,7 +345,7 @@ public class Analyzer {
 						state = STATE_GREAT_EQUAL;
 						index++;
 					} else {
-						Token greatToken = new Token("OPERATOR_GREATER", ">", row,column);
+						Token greatToken = new Token("OPERATOR", ">", row,column);
 						outPutToken(greatToken);
 						lexemeBuffer.clear();
 						state = STATE_INITIAL;
@@ -353,7 +353,7 @@ public class Analyzer {
 					break;
 
 				case STATE_GREAT_EQUAL:
-					Token greatEqualToken = new Token("OPERATOR_GREATER_EQUAL", ">=", row,column);
+					Token greatEqualToken = new Token("OPERATOR", ">=", row,column);
 					outPutToken(greatEqualToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
@@ -364,7 +364,7 @@ public class Analyzer {
 						state = STATE_LESS_EQUAL;
 						index++;
 					} else {
-						Token lessToken = new Token("OPERATOR_LESS", "<", row,column);
+						Token lessToken = new Token("OPERATOR", "<", row,column);
 						outPutToken(lessToken);
 						lexemeBuffer.clear();
 						state = STATE_INITIAL;
@@ -372,7 +372,7 @@ public class Analyzer {
 					break;
 
 				case STATE_LESS_EQUAL:
-					Token lessEqualToken = new Token("OPERATOR_LESS_EQUAL", "<=", row,column);
+					Token lessEqualToken = new Token("OPERATOR", "<=", row,column);
 					outPutToken(lessEqualToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
@@ -380,7 +380,7 @@ public class Analyzer {
 
 				case STATE_NOT_EQUAL:
 					if (c == '=') {
-						Token notEqualToken = new Token("OPERATOR_NOT_EQUAL", "!=", row,column);
+						Token notEqualToken = new Token("OPERATOR", "!=", row,column);
 						outPutToken(notEqualToken);
 						lexemeBuffer.clear();
 						state = STATE_INITIAL;
@@ -388,42 +388,42 @@ public class Analyzer {
 					break;
 
 				case STATE_LEFT_PARENTHESIS:
-					Token leftParenthesisToken = new Token("SEPARATOR_LEFT_PARENTHESIS", "(", row,column);
+					Token leftParenthesisToken = new Token("SEPARATOR", "(", row,column);
 					outPutToken(leftParenthesisToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_RIGHT_PARENTHESIS:
-					Token rightParenthesisToken = new Token("SEPARATOR_RIGHT_PARENTHESIS", ")", row,column);
+					Token rightParenthesisToken = new Token("SEPARATOR", ")", row,column);
 					outPutToken(rightParenthesisToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_LEFT_BRACE:
-					Token leftBraceToken = new Token("SEPARATOR_LEFT_BRACE", "{", row,column);
+					Token leftBraceToken = new Token("SEPARATOR", "{", row,column);
 					outPutToken(leftBraceToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_RIGHT_BRACE:
-					Token rightBraceToken = new Token("SEPARATOR_RIGHT_BRACE", "}", row,column);
+					Token rightBraceToken = new Token("SEPARATOR", "}", row,column);
 					outPutToken(rightBraceToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_LEFT_BRACKET:
-					Token leftBracketToken = new Token("SEPARATOR_LEFT_BRACKET", "[", row,column);
+					Token leftBracketToken = new Token("SEPARATOR", "[", row,column);
 					outPutToken(leftBracketToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
 					break;
 
 				case STATE_RIGHT_BRACKET:
-					Token rightBracketToken = new Token("SEPARATOR_RIGHT_BRACKET", "]", row,column);
+					Token rightBracketToken = new Token("SEPARATOR", "]", row,column);
 					outPutToken(rightBracketToken);
 					lexemeBuffer.clear();
 					state = STATE_INITIAL;
