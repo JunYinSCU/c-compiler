@@ -17,6 +17,10 @@ public class SyntaxParser {
     private String outputFile = "output.txt";
     private BufferedWriter output;
 
+    public LinkedList<Token> getTokens() {
+        return this.tokens;
+    }
+
     private LinkedList<Token> getTokensFormFile(String inputFile) {
         LinkedList<Token> tokens = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
@@ -86,24 +90,32 @@ public class SyntaxParser {
      * 将current指针向前移动一位，返回前一个token
      * 返回值：移动后的前一个token
      */
-    private Token advance() {
-        if (!isAtEnd())
+    private void advance() {
+        if(current < tokens.size()){
             current++;
-        return previous();
+        }
+        //return previous();
+    }
+
+    private void back() {
+        current--;
     }
 
     /*
      * 判断是否到达tokens末尾
      */
     private boolean isAtEnd() {
-        return peek().getType() == EOFToken.getType();
+        return getCurrent().getType() == EOFToken.getType();
     }
 
     /*
      * 获得当前token，指针不移动
      */
-    private Token peek() {
-        return tokens.get(current);
+    private Token getCurrent() {
+        if(current < tokens.size()){
+            return tokens.get(current);
+        }
+        return null;
     }
 
     /*
@@ -126,27 +138,27 @@ public class SyntaxParser {
      * 否则比较类型和值
      * 返回值：true/false
      */
-    private boolean match(Token t) {
+    private boolean match(Token expectedToken) {
         if (isAtEnd())
             return false;
 
-        if(t.getValue().equals("null")){
-            if(peek().getType().equals(t.getType())){
+        if(expectedToken.getValue().equals("null")){
+            if(getCurrent().getType().equals(expectedToken.getType())){
                 return true;
             }
         }else{
-            if(peek().getType().equals(t.getType()) && peek().getValue().equals(t.getValue())){
+            if(getCurrent().getType().equals(expectedToken.getType()) && getCurrent().getValue().equals(expectedToken.getValue())){
                 return true;
             }
         }
         return false;
     }
 
-    boolean isEqual(Token t1, Token t2) {
-        if(t2.getValue().equals("null")){
-            return t1.getType().equals(t2.getType());
+    boolean isEqual(Token actualToken, Token expectedToken) {
+        if(expectedToken.getValue().equals("null")){
+            return actualToken.getType().equals(expectedToken.getType());
         }
-        return t1.getType().equals(t2.getType()) && t1.getValue().equals(t2.getValue());
+        return actualToken.getType().equals(expectedToken.getType()) && actualToken.getValue().equals(expectedToken.getValue());
     }
 
     /*
@@ -163,9 +175,9 @@ public class SyntaxParser {
      * 无论是否匹配成功，都会将指针向前移动一位
      * 如果匹配失败，则调用error方法,提示当前token错误
      */
-    private void consume(Token token) {
-        if (!match(token)) {
-            error(peek());     
+    private void consume(Token expectedToken) {
+        if (!match(expectedToken)) {
+            error(getCurrent());     
         }
         advance();     
     }
@@ -176,17 +188,43 @@ public class SyntaxParser {
         System.out.println(errorMessage);
     }
 
+    private void error(String expected, Token currentToken) {
+        System.out.println(expected);
+        String errorMessage = "Current: " + currentToken.getValue() + " is not a valid token at line "
+                + currentToken.getRow() + ", column " + currentToken.getColum();
+        System.out.println(errorMessage);
+    }
+
+    private void synchronize(String... expectedStarts) {
+        Token current = getCurrent();
+        while (current != null) {
+            for (String start : expectedStarts) {
+                if (current.getValue().equals(start)) {
+                    return;
+                }
+            }
+            if (isStatement() || isTypeSpecifier()) {
+                return;
+            }
+            advance();
+        }
+    }
+
     /*
      * 主程序入口
      */
     public void parse() {
-        program();
+        program();      
+        System.out.println("Syntax analysis completed.");
     }
     /*
      * 文法1
      */
     private void program() {
         declaration_list();
+        if(!isAtEnd()) {
+            error("Error: Unexpected tokens at the end of input: ",getCurrent());
+        }
     }
 
     /*
@@ -203,11 +241,10 @@ public class SyntaxParser {
     */
     private void declaration_list1() {
         //var_declaration和fun_declaration类型定义实际都归结于type_specifier的int或者void
-        Token INTtoken = new Token("KEYWORD","int");
-        Token VOIDtoken = new Token("KEYWORD","void");
-        while(match(INTtoken) || match(VOIDtoken)) {
+        while(isTypeSpecifier()) {
             declaration();
         }
+        // ε 时不处理
     }
 
     /*
@@ -216,13 +253,17 @@ public class SyntaxParser {
     */
     private void declaration() {
         //todo：完善var_declaration和fun_declaration调用的判定条件
-        Token judgeToken = lookAheadN(3);
-        if(judgeToken.getValue().equals(";") ||judgeToken.getValue().equals("[")){
-            var_declaration();
-        }else if(judgeToken.getValue() == "("){
-            fun_declaration();
-        }else {
-            fun_declaration();
+    
+        if(isTypeSpecifier()){
+            Token judgeToken = lookAheadN(2);             
+            if(judgeToken.getValue().equals(";") ||judgeToken.getValue().equals("[")){
+                var_declaration();
+            }else if(judgeToken.getValue() == "("){
+                fun_declaration();
+            }
+        }else{          
+            error("Error: Expected 'int' or 'void' at the beginning of a declaration", getCurrent());
+            synchronize("int", "void", "if", "while", "return", "{", ";");
         }
     }
 
@@ -251,6 +292,13 @@ public class SyntaxParser {
         consume(new Token("SEPARATOR",")"));
         compound_stmt();
     }
+
+    boolean isTypeSpecifier(){
+        Token INTtoken = new Token("KEYWORD","int");
+        Token VOIDtoken = new Token("KEYWORD","void");
+        return match(INTtoken) || match(VOIDtoken);
+    }
+
     /*
      * 文法5
      */
@@ -264,7 +312,7 @@ public class SyntaxParser {
             consume(VOIDtoken);
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error(peek());
+            error("Error: Expected 'int' or 'void'",getCurrent());
             advance();
         }
     }
@@ -273,9 +321,9 @@ public class SyntaxParser {
      * 文法7
      */
     private void params(){
-        Token token = new Token("KEYWORD","void");
-        if(match(token)){
-            consume(token);
+        Token voidToken = new Token("KEYWORD","void");
+        if(match(voidToken)){
+            consume(voidToken);
         }else{
             param_list();
         }
@@ -303,11 +351,12 @@ public class SyntaxParser {
      * 文法8.2
      */
     private void param_list1(){
-        Token token = new Token("SEPARATOR",",");
-        while(match(token)){
-            consume(token);
+        Token commaToken = new Token("SEPARATOR",",");
+        while(match(commaToken)){
+            consume(commaToken);
             param();
         }
+        // ε 时不处理
 
     }
 
@@ -339,12 +388,10 @@ public class SyntaxParser {
      * 
      */
     private void local_declarations1(){
-        Token INTtoken = new Token("KEYWORD","int");
-        Token VOIDtoken = new Token("KEYWORD","void");
-        while(match(INTtoken) || match(VOIDtoken)){
+        while(isTypeSpecifier()){
             var_declaration();
         }
-        //todo:如果为空时
+        // ε 时不处理
     }
 
     /*
@@ -364,7 +411,7 @@ public class SyntaxParser {
         while(isStatement()){
             statement();
         }
-        //todo:如果为空时
+        // ε 时不处理
     }
 
     boolean isStatement() {
@@ -377,21 +424,26 @@ public class SyntaxParser {
      * 为expression_stmt、compound_stmt、selection_stmt、iteration_stmt、return_stmt时进入statement
      */
     private void statement() {
-        if(isExpressionStmt()){
-            expression_stmt();
-        }else if(isCompoundStmt()){
-            compound_stmt();
-        }else if(isSelectionStmt()){
-            selection_stmt();
-        }else if(isIterationStmt()){
-            iteration_stmt();
-        }else if(isReturnStmt()){
-            return_stmt();
+        if(!isAtEnd()){
+            if(isExpressionStmt()){
+                expression_stmt();
+            }else if(isCompoundStmt()){
+                compound_stmt();
+            }else if(isSelectionStmt()){
+                selection_stmt();
+            }else if(isIterationStmt()){
+                iteration_stmt();
+            }else if(isReturnStmt()){
+                return_stmt();
+            }else{
+                //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
+                error("Unexpected token at the start of a statement.",getCurrent());
+                advance();
+            }
         }else{
-            //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error(peek());
-            advance();
+            error("Expected a statement but found end of input", getCurrent());
         }
+        
     }
 
     boolean isExpressionStmt() {
@@ -478,12 +530,22 @@ public class SyntaxParser {
         //todo:完善判断逻辑
         Token Assign = new Token("OPERATOR","=");
         if(isVar()){
-            var();
-            if(match(Assign)){
+            Token next = next();
+
+            if(isEqual(next,new Token("SEPARATOR","["))){
+                Token nextNext = lookAheadN(2);
+
+                if(isSimpleExpression(nextNext)){
+                    var();
+                    consume(Assign);
+                    expression();
+                    return;
+                }               
+            }else if(isEqual(next,new Token("OPERATOR","="))){
+                var();
                 consume(Assign);
                 expression();
-            }else{
-                simple_expression();
+                return;
             }
         }else{
             simple_expression();
@@ -492,6 +554,10 @@ public class SyntaxParser {
 
     boolean isVar() {
         return match(new Token("ID","null"));
+    }
+    boolean isSimpleExpression(Token token) {
+        return isEqual(token,new Token("ID","null")) || isEqual(token,new Token("NUM","null")) ||
+                isEqual(token,new Token("SEPARATOR","("));
     }
 
     /*
@@ -530,27 +596,11 @@ public class SyntaxParser {
      * 
      */
     private void relop() {
-        Token less = new Token("OPERATOR", "<");
-        Token lessEqual = new Token("OPERATOR", "<=");
-        Token equal = new Token("OPERATOR", "==");
-        Token notEqual = new Token("OPERATOR", "!=");
-        Token greater = new Token("OPERATOR", ">");
-        Token greaterEqual = new Token("OPERATOR", ">=");
-        if(match(less)){
-            consume(less);         
-        }else if(match(lessEqual)){
-            consume(lessEqual);
-        }else if(match(equal)){
-            consume(equal);
-        }else if(match(notEqual)){
-            consume(notEqual);
-        }else if(match(greater)){
-            consume(greater);
-        }else if(match(greaterEqual)){
-            consume(greaterEqual);
+        if(isRelop()){
+            advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error(peek());
+            error(getCurrent());
             advance();
         }
     }
@@ -572,9 +622,8 @@ public class SyntaxParser {
         while(isAddop()){
             addop();
             term();
-            additive_expression1();
         }
-        //todo:如果为空时
+        
 
         //todo：另一种想法，只不过需要合并additive_expression1和addop的处理，需要判断哪种更合理
         // Token plus = new Token("OPERATOR", "+");
@@ -602,15 +651,11 @@ public class SyntaxParser {
      * 
      */
     private void addop(){
-        Token plus = new Token("OPERATOR", "+");
-        Token minus = new Token("OPERATOR", "-");
-        if(match(plus)){
-            consume(plus);
-        }else if(match(minus)){
-            consume(minus);
+        if(isAddop()){
+            advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error(peek());
+            error("Error: Expected '+' or '-'",getCurrent());
             advance();
         }
     }
@@ -632,7 +677,6 @@ public class SyntaxParser {
         while(isMulop()){
             mulop();
             factor();
-            term1();
         }
     }
 
@@ -644,15 +688,11 @@ public class SyntaxParser {
      * 文法25
      */
     private void mulop(){
-        Token mul = new Token("OPERATOR", "*");
-        Token div = new Token("OPERATOR", "/");
-        if(match(mul)){
-            consume(mul);
-        }else if(match(div)){
-            consume(div);
+       if(isMulop()){
+            advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error(peek());
+            error("Error: Expected '*' or '/'",getCurrent());
             advance();
         }
     }
@@ -665,25 +705,32 @@ public class SyntaxParser {
         Token leftBracket = new Token("SEPARATOR", "(");
         Token ID = new Token("ID", "null");
         Token NUM = new Token("NUM", "null");
-        if (match(leftBracket)) {
-            consume(leftBracket);
-            expression();
-            consume(new Token("SEPARATOR", ")"));
-        } else if (match(ID)) {
-            //consume(ID);
-            Token leftBracket1 = lookAheadN(1);
-            if(isEqual(leftBracket,leftBracket1)){
-                call();
-            }else{
-                var();
+        if(!isAtEnd()){
+            if (match(leftBracket)) {
+                consume(leftBracket);
+                expression();
+                consume(new Token("SEPARATOR", ")"));
+            } else if (match(ID)) {
+                //consume(ID);
+                Token leftBracket1 = lookAheadN(1);
+                if(isEqual(leftBracket,leftBracket1)){
+                    call();
+                }else{
+                    var();
+                }
+            } else if (match(NUM)) {
+                consume(NUM);
+            } else {
+                // 如果都不匹配，则说明当前是错误的token,提示错误并向前移动
+                error("Error: Expected '(', ID, or NUM as a factor",getCurrent());
+                //todo: 寻找可能的factor位置
+                //synchronize("(", TokenType.ID.toString(), TokenType.NUM.toString());
+                advance();
             }
-        } else if (match(NUM)) {
-            consume(NUM);
-        } else {
-            // 如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error(peek());
-            advance();
+        }else{
+            error("Expected a factor but found end of input", getCurrent());
         }
+        
     }
 
     /*
@@ -705,7 +752,7 @@ public class SyntaxParser {
         if(isExpression()){
             args_list();
         }
-        //todo:如果为空时       
+             
     }
 
     /*
