@@ -18,7 +18,15 @@ C-的语法描述如下：
 9. param → type-specifier ID | type-specifier ID [ ]
 10. compound-stmt → { local-declarations statement-list }
 11. local-declarations → local-declarations var-declaration | empty
+/*
+11.1 local-declarations → local-declarations'
+11.2 local-declarations' → var-declaration local-declarations' | ε
+*/
 12. statement-list → statement-list statement | empty
+/*
+12.1 statement-list → statement_list'
+12.2 statement_list' → statement | ε
+*/
 13. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt
 14. expression-stmt → expression ; | ;
 15. selection-stmt → if ( expression ) statement | if ( expression ) statement else statement
@@ -29,13 +37,25 @@ C-的语法描述如下：
 20. simple-expression → additive-expression relop additive-expression | additive-expression
 21. relop → <= | < | > | >= | == | !=
 22. additive-expression → additive-expression addop term | term
+/*
+22.1 additive-expression → term additive-expression'
+22.2 additive-expression' → addop term additive-expression' | ε
+*/
 23. addop → + | -
 24. term → term mulop factor | factor
+/*
+24.1 term → factor term'
+24.2 term' → mulop factor term' | ε
+*/
 25. mulop → * | /
 26. factor → ( expression ) | var | call | NUM
 27. call → ID ( args )
 28. args → arg-list | empty
 29. arg-list → arg-list , expression | expression
+/*
+29.1 arg-list → expression arg-list'
+29.2 arg-list' → , expression arg-list' | ε
+*/
 
 非终结符：
 program, declaration-list, declaration, var-declaration, type-specifier,
