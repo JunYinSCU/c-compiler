@@ -154,7 +154,7 @@ public class SyntaxParser {
         return false;
     }
 
-    boolean isEqual(Token actualToken, Token expectedToken) {
+    private boolean isEqual(Token actualToken, Token expectedToken) {
         if(expectedToken.getValue().equals("null")){
             return actualToken.getType().equals(expectedToken.getType());
         }
@@ -293,7 +293,7 @@ public class SyntaxParser {
         compound_stmt();
     }
 
-    boolean isTypeSpecifier(){
+    private boolean isTypeSpecifier(){
         Token INTtoken = new Token("KEYWORD","int");
         Token VOIDtoken = new Token("KEYWORD","void");
         return match(INTtoken) || match(VOIDtoken);
@@ -414,7 +414,7 @@ public class SyntaxParser {
         // ε 时不处理
     }
 
-    boolean isStatement() {
+    private boolean isStatement() {
         return isExpressionStmt() || isCompoundStmt() || isSelectionStmt() ||
                 isIterationStmt() || isReturnStmt();
     }
@@ -446,23 +446,23 @@ public class SyntaxParser {
         
     }
 
-    boolean isExpressionStmt() {
+    private boolean isExpressionStmt() {
         return isExpression() || match(new Token("SEPARATOR", ";"));
     }
 
 
-    boolean isCompoundStmt() {
+    private boolean isCompoundStmt() {
         return match(new Token("SEPARATOR", "{"));
     }
 
-    boolean isSelectionStmt() {
+    private boolean isSelectionStmt() {
         return match(new Token("KEYWORD", "if"));
     }
 
-    boolean isIterationStmt() {
+    private boolean isIterationStmt() {
         return match(new Token("KEYWORD", "while"));
     }
-    boolean isReturnStmt() {
+    private boolean isReturnStmt() {
         return match(new Token("KEYWORD", "return"));
     }
 
@@ -478,7 +478,7 @@ public class SyntaxParser {
     }
 
     // ( ID  NUM 时进入expression
-    boolean isExpression() {
+    private boolean isExpression() {
         return match(new Token("ID", "null")) || match(new Token("NUM", "null")) ||
                 match(new Token("SEPARATOR","("));
     }
@@ -552,10 +552,10 @@ public class SyntaxParser {
         }    
     }
 
-    boolean isVar() {
+    private boolean isVar() {
         return match(new Token("ID","null"));
     }
-    boolean isSimpleExpression(Token token) {
+    private boolean isSimpleExpression(Token token) {
         return isEqual(token,new Token("ID","null")) || isEqual(token,new Token("NUM","null")) ||
                 isEqual(token,new Token("SEPARATOR","("));
     }
@@ -585,7 +585,7 @@ public class SyntaxParser {
         }
     }
 
-    boolean isRelop() {
+    private boolean isRelop() {
         return match(new Token("OPERATOR", "<")) || match(new Token("OPERATOR", "<=")) ||
                match(new Token("OPERATOR", "==")) || match(new Token("OPERATOR", "!=")) ||
                match(new Token("OPERATOR", ">")) || match(new Token("OPERATOR", ">="));
@@ -642,7 +642,7 @@ public class SyntaxParser {
         
     }
 
-    boolean isAddop() {
+    private boolean isAddop() {
         return match(new Token("OPERATOR", "+")) || match(new Token("OPERATOR", "-"));
     }
 
@@ -680,7 +680,7 @@ public class SyntaxParser {
         }
     }
 
-    boolean isMulop() {
+    private boolean isMulop() {
         return match(new Token("OPERATOR", "*")) || match(new Token("OPERATOR", "/"));
     }
 
