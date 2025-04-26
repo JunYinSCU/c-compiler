@@ -67,5 +67,5 @@ addop, term, mulop, factor, call, args, arg-list
 终结符：
 int  void  ID  NUM  ;  [  ]  (  )  {  }  ,  if  else  while  return  =  <=  <  >  >=  ==  !=  +  -  *  /
 
-TokenType:
+Token的type字段内容如下，用getValue方法获得:
 KEYWORD  ID   NUM  OPERATOR  SEPARATOR   COMMENT 
