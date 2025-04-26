@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class SyntaxParser {
     private LinkedList<Token> tokens;
     private Token EOFToken = new Token("EOF", "$", -1, -1);
+
     private int current = 0;
 
     private String inputFile = "input.txt";
@@ -26,6 +27,9 @@ public class SyntaxParser {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     String type = matcher.group(1).trim();
+                    if(type.equals("COMMENT")){ // 忽略注释
+                        continue;
+                    }
                     String value = matcher.group(2).trim();
                     int row = Integer.parseInt(matcher.group(3).trim());
                     int column = Integer.parseInt(matcher.group(4).trim());
@@ -53,13 +57,19 @@ public class SyntaxParser {
     }
 
     public SyntaxParser(LinkedList<Token> tokens, String outputFile) {
-        this.tokens = tokens;
+        LinkedList<Token> filteredTokens = new LinkedList<>();
+        for (Token t : tokens) {
+            if (!t.getType().equals("COMMENT")) {
+                filteredTokens.add(t);
+            }
+        }
+        this.tokens = filteredTokens;
+        this.tokens.addLast(EOFToken);
         try {
             output = new BufferedWriter(new FileWriter(this.outputFile));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public SyntaxParser() {
