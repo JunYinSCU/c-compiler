@@ -3,8 +3,8 @@ import java.util.LinkedList;
 
 public class Main {
     public static void main(String[] args) {
-        String inputFile = "input.txt";
-        String outputFile = "output.txt";
+        String inputFile = "Lexer/test.txt";
+        String outputFile = "Lexer/test_output.txt";
 
         Analyzer analyzer = new Analyzer(inputFile, outputFile);
         analyzer.start();
