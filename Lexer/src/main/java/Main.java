@@ -1,22 +1,27 @@
 
 import java.util.LinkedList;
 
+import Lexical.LexicalAnalyzer;
+import Lexical.Token;
+import Syntax.SyntaxParser;
+
 public class Main {
     public static void main(String[] args) {
-        String inputFile = "Lexer/test1.txt";
-        String outputFile = "Lexer/test1_output.txt";
+        String SourceInputFile = "Lexer/test3.txt";
+        String TokensOutputFile = "Lexer/test3_tokens.txt";
+        String ASTOutputFile = "Lexer/test3_AST.txt";
 
-        Analyzer analyzer = new Analyzer(inputFile, outputFile);
+        LexicalAnalyzer analyzer = new LexicalAnalyzer(SourceInputFile, TokensOutputFile);
         analyzer.start();
         for (Token token : analyzer.getTokens()) {
             System.out.println(token);
         }
 
-        SyntaxParser parser = new SyntaxParser(analyzer.getTokens(), outputFile);
+        SyntaxParser parser = new SyntaxParser(analyzer.getTokens(), ASTOutputFile);
         parser.parse();
+        
         /*
          * 存在的bug：
-         * 无法识别数组下标 后面跟着除等号外其他字符的情况;现在是跟着等号有问题，其他符号无问题
          * 声明语句必须在每段的开头（不知道是定义还是bug）
          */
 

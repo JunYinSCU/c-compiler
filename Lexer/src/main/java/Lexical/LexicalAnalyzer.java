@@ -1,3 +1,4 @@
+package Lexical;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,7 +8,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 
-public class Analyzer {
+public class LexicalAnalyzer {
 	private LinkedList<Character> lexemeBuffer = new LinkedList<>();	//存储当前词素
 	private LinkedList<Token> tokens = new LinkedList<>();	//存储token列表
 	private String currentLine;		//当前处理的行
@@ -40,7 +41,7 @@ public class Analyzer {
 		this.outputFile = outputFile;
 	}
 
-	public Analyzer(String inputFile, String outputFile){	//构造函数，定义输入输出文件，创建输出文件
+	public LexicalAnalyzer(String inputFile, String outputFile){	//构造函数，定义输入输出文件，创建输出文件
 		this.inputFile = inputFile;
 		this.outputFile = outputFile;
 
@@ -51,7 +52,7 @@ public class Analyzer {
 		}
 	}
 
-	public Analyzer() {	//用默认的输入输出文件，创建输出文件
+	public LexicalAnalyzer() {	//用默认的输入输出文件，创建输出文件
 		try {
 			output = new BufferedWriter(new FileWriter(outputFile));
 		} catch (IOException e) {

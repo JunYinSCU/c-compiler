@@ -1,3 +1,4 @@
+package Syntax;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -6,6 +7,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import Lexical.Token;
 
 public class SyntaxParser {
     private LinkedList<Token> tokens;   //token列表
