@@ -9,10 +9,13 @@ public class Main {
         Analyzer analyzer = new Analyzer(inputFile, outputFile);
         analyzer.start();
 
-        LinkedList<Token> tokens = analyzer.getTokens();
-        for (Token token : tokens) {
-            System.out.println(token);
-        }
+        // LinkedList<Token> tokens = analyzer.getTokens();
+        // for (Token token : tokens) {
+        //     System.out.println(token);
+        // }
+        SyntaxParser parser = new SyntaxParser(analyzer.getTokens(), outputFile);
+        parser.parse();
+
 
     }
 }

@@ -8,9 +8,9 @@ public class Token {
 
 	@Override
 	public String toString() {
-		String string = "< " + this.type + " , " + this.value + " , ("
-				+ this.row + " , "+ this.column + ") >";
-		return string;
+		String string = "< type=" + this.type + " , value=" + this.value 
+            + " , (row=" + this.row + " , column=" + this.column + ") >";
+    	return string;
 	}
 
 	public String getValue() {
@@ -51,5 +51,10 @@ public class Token {
 	public Token() {
 		
 	}
+
+	public Token(String type, String value) {
+        this.value = value;
+        this.type = type;
+    }
 
 }

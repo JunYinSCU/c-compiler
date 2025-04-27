@@ -27,7 +27,8 @@ public class SyntaxParser {
             String line;
             while ((line = reader.readLine()) != null) {
                 // 使用正则表达式匹配 Token 字符串的各个部分
-                Pattern pattern = Pattern.compile("<\\s*([^,\\s]+)\\s*,\\s*([^,\\s]+)\\s*,\\s*\\(\\s*(\\d+)\\s*,\\s*(\\d+)\\s*\\)\\s*>");
+                Pattern pattern = Pattern.compile("<\\s*type=([^,\\s]+)\\s*,\\s*value=([^,\\s]*)\\s*,\\s*\\(\\s*row=(\\d+)\\s*,\\s*column=(\\d+)\\s*\\)\\s*>");
+
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     String type = matcher.group(1).trim();
@@ -290,6 +291,7 @@ public class SyntaxParser {
      */
     private void fun_declaration() {
         System.out.println("fun_declaration");
+        System.out.println(getCurrent());
         type_specifier();
         consume(new Token("ID","null"));
         consume(new Token("SEPARATOR","("));
@@ -362,6 +364,7 @@ public class SyntaxParser {
     private void param_list1(){
         System.out.println("param_list1");
         Token commaToken = new Token("SEPARATOR",",");
+        System.out.println(match(commaToken));
         while(match(commaToken)){
             consume(commaToken);
             param();
@@ -490,7 +493,7 @@ public class SyntaxParser {
         System.out.println("expression_stmt");
         if(isExpression()){
             expression();
-        }  
+        } 
         consume(new Token("SEPARATOR",";"));
     }
 
@@ -572,6 +575,8 @@ public class SyntaxParser {
                 simple_expression();
             }
         }else{
+            System.out.println("333333333");
+            System.out.println(getCurrent());
             simple_expression();
         }    
     }
