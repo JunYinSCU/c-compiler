@@ -1,0 +1,149 @@
+A.1 C—惯用的词法
+
+1. 下面是语言的关键词：
+else if int return void while
+所有的关键字都是保留字，并且必须是小写。
+
+2. 下面是常用符号：
++ - * / > >= < <= = == != ; , ( ) { } [ ] /* */
+3. 其他标志符是 `ID` 和 `NUM`，通过下列词法表达式定义：
+ID = letter letter* 
+NUM = digit digit* 
+letter = a|b|...|z|A|B|...|Z 
+digit = 0|1|...|9
+
+小写和大写字母是不同的。
+
+4. 空格（包括空格符、制表符和换行符）是终结符，空格通常会被忽略，除了它必须分开 `ID` 和 `NUM` 关键字的情况。
+
+5. 注释用 `/*` 和 `*/` 作为界定符。注释可以放在任何空白的位置（即换行符或空格旁）。它可以是单行或多行。注释不能嵌套。
+
+---
+
+A.2 C—的语法和语义
+
+C-的语法描述如下：
+1. program → declaration-list
+2. declaration-list → declaration-list declaration | declaration
+3. declaration → var-declaration | fun-declaration
+4. var-declaration → type-specifier ID ; | type-specifier ID [ NUM ] ;
+5. type-specifier → int | void
+6. fun-declaration → type-specifier ID ( params ) compound-stmt
+7. params → param-list | void
+8. param-list → param-list , param | param
+9. param → type-specifier ID | type-specifier ID [ ]
+10. compound-stmt → { local-declarations statement-list }
+11. local-declarations → local-declarations var-declaration | empty
+12. statement-list → statement-list statement | empty
+13. statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt
+14. expression-stmt → expression ; | ;
+15. selection-stmt → if ( expression ) statement | if ( expression ) statement else statement
+16. iteration-stmt → while ( expression ) statement
+17. return-stmt → return ; | return expression ;
+18. expression → var = expression | simple-expression
+19. var → ID | ID [ expression ]
+20. simple-expression → additive-expression relop additive-expression | additive-expression
+21. relop → <= | < | > | >= | == | !=
+22. additive-expression → additive-expression addop term | term
+23. addop → + | -
+24. term → term mulop factor | factor
+25. mulop → * | /
+26. factor → ( expression ) | var | call | NUM
+27. call → ID ( args )
+28. args → arg-list | empty
+29. arg-list → arg-list , expression | expression
+
+对以上每条文法规则，给出相关语义的简要解释：
+
+1. program → declaration-list
+2. declaration-list → declaration-list declaration | declaration
+3. declaration → var-declaration | fun-declaration
+
+程序由声明和语句组成。声明包括变量声明和函数声明，顺序是任意的。至少必须有一个函数声明，即 `main` 函数。语法规则中 `fun-declaration` 规定了函数声明的结构，`compound-stmt` 规定了函数体的结构。所有函数的定义都必须明确规定返回值类型（这避免了 C 语言中的隐式返回类型问题）。每个程序必须包含一个函数声明，名称为 `main`。注意，C- 语言无 `main` 之外的函数重载功能，因此函数名不可重复。
+指示符 int、void 用于函数声明（参见下述）。但要注意，每个声明只能声明一个变量。
+
+6. fun-declaration → type-specifier ID ( params ) compound-stmt
+7. params → param-list | void
+8. param-list → param-list , param | param
+9. param → type-specifier ID | type-specifier ID [ ]
+
+参数表是用于列举传递给函数的数据列表，参数用逗号分开用作参数列表组成。后面是参数的类型声明，其次是变量名。简单的变量参数较容易处理。数组参数的引用采用传递（或是按引用传递），有些编程语言也允许数据类型“高级”包含参数。一个函数参数列表中使用参数不带括号的情况，较常的函数参数有一个或多个参数。函数可以是无参数的，但必须用 void 关键字。
+
+10. compound-stmt → { local-declarations statement-list }
+
+复合语句用在各种需要一组语句的地方。复合语句通过用大括号括起来的顺序执行语句序列构成。所有局部声明的作用域都局限于复合语句，并不能作用于全局声明。
+
+11. local-declarations → local-declarations var-declaration | empty
+12. statement-list → statement-list statement | empty
+
+变量声明必须在使用之前进行（除非 empty 表示空字符串，有时书写作 ε）。
+
+13. statement → expression-stmt 
+                | compound-stmt 
+                | selection-stmt 
+                | iteration-stmt 
+                | return-stmt
+
+14. expression-stmt → expression ; | ;
+
+表达式语句通常由表达式组成并以分号结尾。这种表达式语句通常来描述它们一方的结果。一般来说，用于赋值或者函数调用。
+
+15. selection-stmt → if ( expression ) statement
+                          | if ( expression ) statement else statement
+
+if 语句可以单独使用或和 else 结合使用。else 语句的作用是在 if 语句条件不满足时执行的语句。0 值引起 if 语句的执行不会发生，非 0 值表示执行。
+
+16. iteration-stmt → while ( expression ) statement
+
+while 语句允许在表达式为真的时候重复执行一条或多条语句，并且如果表达式的值仍为非 0，则执行循环。
+
+17. return-stmt → return ; | return expression ;
+
+return 语句用于返回函数的返回值。对于 void 函数返回值应省略。return 语句必须用于某些特定函数，如 `main` 函数时，必须返回。
+
+18. expression → var = expression | simple-expression
+19. var → ID | ID [ expression ]
+
+变量表达式可以是赋值表达式或简单的表达式。
+
+进行求值,子表达式的值存储到给定的地址。这个值也作为整个表达式的值返回。var 是简单的(整型)变量或下标数组变量。负的下标将引起程序停止(与 C 不同)。然而,不进行下标越界检查。
+
+var 表示 C-比 C 的进一步限制。在 C 中赋值的目标必须是左值(l-value),左值是可以由许多操作获得的地址。在 C-中唯一的左值是由 var 语法给定的,因此这个种类按照句法进行检查,代替像 C 中那样的类型检查。故在 C-中指针运算是禁止的。
+
+20. simple-expression → additive-expression relop additive-expression
+| additive-expression
+
+21. relop → <= | < | > | >= | == | !=
+
+简单表达式由无结合的关系操作符组成(即无括号的表达式仅有一个关系操作符)。简单表达式在它不包含关系操作符时,其值是加法表达式的值,或者如果关系算式求值为 true,其值为 1,求值为 false 时值为 0。   
+
+22. additive-expression → additive-expression addop term | term
+
+23. addop → + | -
+
+24. term → term mulop factor | factor
+
+25. mulop → * | /
+
+加法表达式和项表示了算术操作符的结合性和优先级。符号/表示整数除;即任何余数都被截去。   
+
+26. factor → ( expression ) | var | call | NUM
+
+因子是围在括号内的表达式;或一个变量,求出其变量的值;或者一个函数调用,求出函数的返回值;或者一个 NUM,其值由扫描器计算。数组变量必须是下标变量,除非表达式由单个 ID 组成,并且以数组为参数在函数调用中使用(如下所示)。
+
+27. call → ID ( args )
+
+28. args → arg-list | empty
+
+29. arg-list → arg-list , expression | expression
+
+函数调用的组成是一个 ID (函数名),后面是用括号围起来的参数。参数或者为空,或者由逗号分割的表达式列表组成,表示在一次调用期间分配的参数的值。函数在调用之前必须声明,声明中参数的数目必须等于调用中参数的数目。函数声明中的数组参数必须和一个表达式匹配,这个表达式由一个标识符组成表示一个数组变量。   
+
+最后,上面的规则没有给出输入和输出语句。在 C-的定义中必须包含这样的函数,因为与 C 不同,C-没有独立的编译和链接工具;因此,考虑两个在全局环境中预定义的函数,好像它们已进行了声明:   
+
+int input ( void ) { ... }
+
+void output ( int x ) { ... }
+
+input 函数没有参数,从标准输入设备(通常是键盘)返回一个整数值。output 函数接受一个整型参数,其值和一个换行符一起打印到标准输出设备(通常是屏幕)。
+

@@ -8,13 +8,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SyntaxParser {
-    private LinkedList<Token> tokens;
-    private Token EOFToken = new Token("EOF", "$", -1, -1);
-
-    private int current = 0;
-
-    private String outputFile = "output.txt";
+    private LinkedList<Token> tokens;   //token列表
+    private Token EOFToken = new Token("EOF", "$", -1, -1);     // 文件结束符
+    private int current = 0;    // 当前token指针
+    private String outputFile = "SyntaxOutput.txt";     // 输出文件名
     private BufferedWriter output;
+    private int errorNum = 0; // 语法错误数量
 
     public LinkedList<Token> getTokens() {
         return this.tokens;
@@ -23,13 +22,30 @@ public class SyntaxParser {
 
     public SyntaxParser(LinkedList<Token> tokens, String outputFile) {
         LinkedList<Token> filteredTokens = new LinkedList<>();
-        for (Token t : tokens) {
+        for (Token t : tokens) {    // 过滤掉注释token
             if (!t.getType().equals("COMMENT")) {
                 filteredTokens.add(t);
             }
         }
         this.tokens = filteredTokens;
-        this.tokens.addLast(EOFToken);
+        this.tokens.addLast(EOFToken);  //添加文件结束符
+        this.outputFile = outputFile;
+        try {
+            output = new BufferedWriter(new FileWriter(this.outputFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SyntaxParser(LinkedList<Token> tokens) {
+        LinkedList<Token> filteredTokens = new LinkedList<>();
+        for (Token t : tokens) {    // 过滤掉注释token
+            if (!t.getType().equals("COMMENT")) {
+                filteredTokens.add(t);
+            }
+        }
+        this.tokens = filteredTokens;
+        this.tokens.addLast(EOFToken); //添加文件结束符
         try {
             output = new BufferedWriter(new FileWriter(this.outputFile));
         } catch (IOException e) {
@@ -38,8 +54,8 @@ public class SyntaxParser {
     }
 
     /*
-     * 将current指针向前移动一位，返回前一个token
-     * 返回值：移动后的前一个token
+     * 将current指针向前移动一位
+     * 
      */
     private void advance() {
         if(current < tokens.size() - 1){
@@ -47,6 +63,9 @@ public class SyntaxParser {
         }
     }
 
+    /*
+     * 向后移动一位
+     */
     private void back() {
         current--;
     }
@@ -104,6 +123,9 @@ public class SyntaxParser {
         return false;
     }
 
+    /*
+     * 判断实际token和预期token是否相等，判断方法同match方法
+     */
     private boolean isEqual(Token actualToken, Token expectedToken) {
         if(expectedToken.getValue().equals("null")){
             return actualToken.getType().equals(expectedToken.getType());
@@ -112,7 +134,8 @@ public class SyntaxParser {
     }
 
     /*
-     * 查看后面第n个token
+     * 获得前面第n个token
+     * 返回值：Token对象
      */
     private Token lookAheadN(int n) {
         if (current + n >= tokens.size()) {
@@ -120,6 +143,7 @@ public class SyntaxParser {
         }
         return tokens.get(current + n);
     }
+
     /*
      * consume方法只用于匹配终结符token，调用match方法进行匹配
      * 无论是否匹配成功，都会将指针向前移动一位
@@ -136,6 +160,7 @@ public class SyntaxParser {
         String errorMessage = "Error: " + token.getValue() + " is not a valid token at line " + token.getRow()
                 + ", column " + token.getColum();
         System.out.println(errorMessage);
+        errorNum++;
     }
 
     private void error(String expected, Token currentToken) {
@@ -143,13 +168,18 @@ public class SyntaxParser {
         String errorMessage = "Current: " + currentToken.getValue() + " is not a valid token at line "
                 + currentToken.getRow() + ", column " + currentToken.getColum();
         System.out.println(errorMessage);
+        errorNum++;
     }
 
+    /*
+     * 通过传入的参数，寻找第一个匹配的位置，继续进行下一步语法判断
+     * 如果没有找到，则继续向后移动指针，直到找到为止
+     */
     private void synchronize(String... expectedStarts) {
-        Token current = getCurrent();
-        while (current != null) {
+        Token currentToken = getCurrent();
+        while (currentToken != null) {
             for (String start : expectedStarts) {
-                if (current.getValue().equals(start)) {
+                if (currentToken.getValue().equals(start)) {
                     return;
                 }
             }
@@ -166,13 +196,21 @@ public class SyntaxParser {
     public void parse() {
         program();      
         System.out.println("Syntax analysis completed.");
+        if(errorNum > 0) {
+            System.out.println("Total syntax errors: " + errorNum);
+        } else {
+            System.out.println("No syntax errors found.");
+        }
     }
+
     /*
      * 文法1
      */
     private void program() {
         System.out.println("program");
         declaration_list();
+        //语法分析完成
+        //如果还有多余的token，则说明语法存在错误
         if(!isAtEnd()) {
             error("Error: Unexpected tokens at the end of input: ",getCurrent());
         }
@@ -189,7 +227,7 @@ public class SyntaxParser {
 
     /*
     * 文法2.2
-     * 
+    * 
     */
     private void declaration_list1() {
         System.out.println("declaration_list1");
@@ -209,15 +247,15 @@ public class SyntaxParser {
         //todo：完善var_declaration和fun_declaration调用的判定条件
     
         if(isTypeSpecifier()){
-            Token judgeToken = lookAheadN(2);            
-            if(judgeToken.getValue().equals(";") ||judgeToken.getValue().equals("[")){
+            Token nextNext = lookAheadN(2); //获取第二个token判断是var还是fun            
+            if(nextNext.getValue().equals(";") ||nextNext.getValue().equals("[")){
                 var_declaration();
-            }else if(judgeToken.getValue().equals( "(")){
+            }else if(nextNext.getValue().equals( "(")){
                 fun_declaration();
             }
         }else{          
             error("Error: Expected 'int' or 'void' at the beginning of a declaration", getCurrent());
-            synchronize("int", "void", "if", "while", "return", "{", ";");
+            //synchronize("int", "void", "if", "while", "return", "{", ";");
         }
     }
 
@@ -227,7 +265,7 @@ public class SyntaxParser {
     private void var_declaration() {
         System.out.println("var_declaration");
         type_specifier();
-
+        //对终结符进行匹配消耗
         consume(new Token("ID","null"));
         if(match(new Token("SEPARATOR","["))){
             consume(new Token("SEPARATOR","["));
@@ -235,24 +273,6 @@ public class SyntaxParser {
             consume(new Token("SEPARATOR","]"));
         }
         consume(new Token("SEPARATOR",";"));
-    }
-    /*
-     * 文法6
-     */
-    private void fun_declaration() {
-        System.out.println("fun_declaration");
-        type_specifier();
-        consume(new Token("ID","null"));
-        consume(new Token("SEPARATOR","("));
-        params();
-        consume(new Token("SEPARATOR",")"));
-        compound_stmt();
-    }
-
-    private boolean isTypeSpecifier(){
-        Token INTtoken = new Token("KEYWORD","int");
-        Token VOIDtoken = new Token("KEYWORD","void");
-        return match(INTtoken) || match(VOIDtoken);
     }
 
     /*
@@ -274,6 +294,28 @@ public class SyntaxParser {
         }
     }
 
+    private boolean isTypeSpecifier(){
+        Token INTtoken = new Token("KEYWORD","int");
+        Token VOIDtoken = new Token("KEYWORD","void");
+        return match(INTtoken) || match(VOIDtoken);
+    }
+
+    /*
+     * 文法6
+     */
+    private void fun_declaration() {
+        System.out.println("fun_declaration");
+        type_specifier();
+        consume(new Token("ID","null"));
+        consume(new Token("SEPARATOR","("));
+        params();
+        consume(new Token("SEPARATOR",")"));
+        compound_stmt();
+    }
+
+    
+
+    
     /*
      * 文法7
      */
@@ -285,17 +327,6 @@ public class SyntaxParser {
         }else{
             param_list();
         }
-    }
-
-    /*
-     * 文法10
-     */
-    private void compound_stmt(){
-        System.out.println("compound_stmt");
-        consume(new Token("SEPARATOR","{"));
-        local_declarations();
-        statement_list();
-        consume(new Token("SEPARATOR","}"));
     }
 
     /*
@@ -339,6 +370,17 @@ public class SyntaxParser {
     }
 
     /*
+     * 文法10
+     */
+    private void compound_stmt(){
+        System.out.println("compound_stmt");
+        consume(new Token("SEPARATOR","{"));
+        local_declarations();
+        statement_list();
+        consume(new Token("SEPARATOR","}"));
+    }
+
+    /*
      * 文法11.1
      * 
      */
@@ -346,6 +388,7 @@ public class SyntaxParser {
         System.out.println("local_declarations");
         local_declarations1();
     }
+
     /*
      * 文法11.2
      * 
@@ -413,23 +456,22 @@ public class SyntaxParser {
     }
 
     private boolean isExpressionStmt() {
-        
+        //当为expression或者;时，进入expression_stmt函数
         return isExpression() || match(new Token("SEPARATOR", ";"));
     }
 
-
-    private boolean isCompoundStmt() {
+    private boolean isCompoundStmt() {  //块语句以 { 开头
         return match(new Token("SEPARATOR", "{"));
     }
 
-    private boolean isSelectionStmt() {
+    private boolean isSelectionStmt() { //选择语句以 if 开头    
         return match(new Token("KEYWORD", "if"));
     }
 
-    private boolean isIterationStmt() {
+    private boolean isIterationStmt() { //循环语句以 while 开头
         return match(new Token("KEYWORD", "while"));
     }
-    private boolean isReturnStmt() {
+    private boolean isReturnStmt() {    //返回语句以 return 开头
         return match(new Token("KEYWORD", "return"));
     }
 
@@ -445,12 +487,13 @@ public class SyntaxParser {
         consume(new Token("SEPARATOR",";"));
     }
 
-    // ( ID  NUM 时进入expression
     private boolean isExpression() {
-
+        // 层层归结  最后当token为( ID  NUM 时进入expression
         return match(new Token("ID", "null")) || match(new Token("NUM", "null")) ||
                 match(new Token("SEPARATOR","("));
     }
+
+
     /*
      * 文法15
      * 
@@ -497,36 +540,36 @@ public class SyntaxParser {
     /*
      * 文法18
      * 为var或者simple_expression时进入expression
+     * expression文法定义较为复杂
      */
     private void expression(){
         System.out.println("expression");
-        System.out.println("current: " + getCurrent().getValue());
-        //todo:完善判断逻辑
-        Token Assign = new Token("OPERATOR","=");
-        if(isVar()){
-            Token next = next();
-            System.out.println("next: " + next.getValue());
-            if(isEqual(next,new Token("SEPARATOR","["))){
-                Token nextNext = lookAheadN(2);
-                if(isSimpleExpression(nextNext)){
-                    simple_expression();
-                    return;
-                }               
-            }else if(isEqual(next,new Token("OPERATOR","="))){
-                var();
-                System.out.println("consume assign");
-                consume(Assign);
+        // 先保存当前Token位置，方便回溯
+        int savePos = current;
+
+        if (isVar()) {
+            // 先尝试识别var
+            var();
+
+            // 看下一个Token
+            Token next = getCurrent();
+            if (isEqual(next, new Token("OPERATOR", "="))) {
+                // 确认是赋值表达式 var = expression
+                consume(new Token("OPERATOR", "="));
                 expression();
                 return;
-            }else{
-                simple_expression();
+            } else {
+                // 不是赋值，回溯到var前的位置，识别simple-expression
+                current = savePos;
             }
-        }else{
-            simple_expression();
-        }    
+        }
+
+        // 否则走 simple-expression
+        simple_expression();  
     }
 
     private boolean isVar() {
+        //var以ID开头
         return match(new Token("ID","null"));
     }
 
@@ -578,7 +621,7 @@ public class SyntaxParser {
             advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error(getCurrent());
+            error("Error: Expected relop e.g. <= < >= > ...",getCurrent());
             advance();
         }
     }
@@ -607,6 +650,7 @@ public class SyntaxParser {
     }
 
     private boolean isAddop() {
+        // + -
         return match(new Token("OPERATOR", "+")) || match(new Token("OPERATOR", "-"));
     }
 
@@ -648,6 +692,7 @@ public class SyntaxParser {
     }
 
     private boolean isMulop() {
+        // * /
         return match(new Token("OPERATOR", "*")) || match(new Token("OPERATOR", "/"));
     }
 
@@ -674,25 +719,24 @@ public class SyntaxParser {
         Token leftBracket = new Token("SEPARATOR", "(");
         Token ID = new Token("ID", "null");
         Token NUM = new Token("NUM", "null");
-        System.out.println("current: " + getCurrent().getValue());
+
         if(!isAtEnd()){
-            if (match(leftBracket)) {
+            if (match(leftBracket)) {   //匹配 ( , 则为(expression)的情况
                 consume(leftBracket);
                 expression();
                 consume(new Token("SEPARATOR", ")"));
-            } else if (match(ID)) {
-                //consume(ID);
-                Token leftBracket1 = lookAheadN(1);
-                if(isEqual(leftBracket,leftBracket1)){
+            } else if (match(ID)) {     //匹配ID，可能是函数调用或者变量
+                Token leftBracket1 = lookAheadN(1);     //继续获得下一个token
+                if(isEqual(leftBracket,leftBracket1)){      //如果下一个token为(，则为函数调用
                     call();
-                }else{
+                }else{      //否则为变量
                     var();
                 }
-            } else if (match(NUM)) {
+            } else if (match(NUM)) {    //匹配NUM，直接消耗
                 consume(NUM);
             } else {
                 // 如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-                error("Error: Expected '(', ID, or NUM as a factor",getCurrent());
+                error("Error: Expected '(expression)', ID, call func or NUM as a factor",getCurrent());
                 //todo: 寻找可能的factor位置
                 //synchronize("(", TokenType.ID.toString(), TokenType.NUM.toString());
                 advance();
