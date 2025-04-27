@@ -91,10 +91,9 @@ public class SyntaxParser {
      * 返回值：移动后的前一个token
      */
     private void advance() {
-        if(current < tokens.size()){
+        if(current < tokens.size() - 1){
             current++;
         }
-        //return previous();
     }
 
     private void back() {
@@ -221,6 +220,7 @@ public class SyntaxParser {
      * 文法1
      */
     private void program() {
+        System.out.println("program");
         declaration_list();
         if(!isAtEnd()) {
             error("Error: Unexpected tokens at the end of input: ",getCurrent());
@@ -231,6 +231,7 @@ public class SyntaxParser {
      * 文法2.1
      */
     private void declaration_list() {
+        System.out.println("declaration_list");
         declaration();
         declaration_list1();
     }
@@ -240,6 +241,7 @@ public class SyntaxParser {
      * 
     */
     private void declaration_list1() {
+        System.out.println("declaration_list1");
         //var_declaration和fun_declaration类型定义实际都归结于type_specifier的int或者void
         while(isTypeSpecifier()) {
             declaration();
@@ -252,13 +254,14 @@ public class SyntaxParser {
     * 
     */
     private void declaration() {
+        System.out.println("declaration");
         //todo：完善var_declaration和fun_declaration调用的判定条件
     
         if(isTypeSpecifier()){
-            Token judgeToken = lookAheadN(2);             
+            Token judgeToken = lookAheadN(2);            
             if(judgeToken.getValue().equals(";") ||judgeToken.getValue().equals("[")){
                 var_declaration();
-            }else if(judgeToken.getValue() == "("){
+            }else if(judgeToken.getValue().equals( "(")){
                 fun_declaration();
             }
         }else{          
@@ -271,6 +274,7 @@ public class SyntaxParser {
      * 文法4
      */
     private void var_declaration() {
+        System.out.println("var_declaration");
         type_specifier();
 
         consume(new Token("ID","null"));
@@ -285,6 +289,7 @@ public class SyntaxParser {
      * 文法6
      */
     private void fun_declaration() {
+        System.out.println("fun_declaration");
         type_specifier();
         consume(new Token("ID","null"));
         consume(new Token("SEPARATOR","("));
@@ -303,6 +308,7 @@ public class SyntaxParser {
      * 文法5
      */
     private void type_specifier(){
+        System.out.println("type_specifier");
         Token INTtoken = new Token("KEYWORD","int");
         Token VOIDtoken = new Token("KEYWORD","void");
 
@@ -321,6 +327,7 @@ public class SyntaxParser {
      * 文法7
      */
     private void params(){
+        System.out.println("params");
         Token voidToken = new Token("KEYWORD","void");
         if(match(voidToken)){
             consume(voidToken);
@@ -333,6 +340,7 @@ public class SyntaxParser {
      * 文法10
      */
     private void compound_stmt(){
+        System.out.println("compound_stmt");
         consume(new Token("SEPARATOR","{"));
         local_declarations();
         statement_list();
@@ -343,6 +351,7 @@ public class SyntaxParser {
      * 文法8.1
      */
     private void param_list(){
+        System.out.println("param_list");
         param();
         param_list1();
     }
@@ -351,6 +360,7 @@ public class SyntaxParser {
      * 文法8.2
      */
     private void param_list1(){
+        System.out.println("param_list1");
         Token commaToken = new Token("SEPARATOR",",");
         while(match(commaToken)){
             consume(commaToken);
@@ -364,6 +374,7 @@ public class SyntaxParser {
      * 文法9
      */
     private void param(){
+        System.out.println("param");
         type_specifier();
 
         Token ID = new Token("ID","null");       
@@ -381,6 +392,7 @@ public class SyntaxParser {
      * 
      */
     private void local_declarations(){
+        System.out.println("local_declarations");
         local_declarations1();
     }
     /*
@@ -388,6 +400,7 @@ public class SyntaxParser {
      * 
      */
     private void local_declarations1(){
+        System.out.println("local_declarations1");
         while(isTypeSpecifier()){
             var_declaration();
         }
@@ -399,6 +412,7 @@ public class SyntaxParser {
      * 
      */
     private void statement_list(){
+        System.out.println("statement_list");
         statement_list1();
     }
 
@@ -407,7 +421,7 @@ public class SyntaxParser {
      * 
      */
     private void statement_list1(){
-        
+        System.out.println("statement_list1");
         while(isStatement()){
             statement();
         }
@@ -424,6 +438,7 @@ public class SyntaxParser {
      * 为expression_stmt、compound_stmt、selection_stmt、iteration_stmt、return_stmt时进入statement
      */
     private void statement() {
+        System.out.println("statement");
         if(!isAtEnd()){
             if(isExpressionStmt()){
                 expression_stmt();
@@ -447,6 +462,7 @@ public class SyntaxParser {
     }
 
     private boolean isExpressionStmt() {
+        
         return isExpression() || match(new Token("SEPARATOR", ";"));
     }
 
@@ -471,6 +487,7 @@ public class SyntaxParser {
      * 为expression或者;时进入expression_stmt
      */
     private void expression_stmt() {
+        System.out.println("expression_stmt");
         if(isExpression()){
             expression();
         }  
@@ -479,6 +496,7 @@ public class SyntaxParser {
 
     // ( ID  NUM 时进入expression
     private boolean isExpression() {
+
         return match(new Token("ID", "null")) || match(new Token("NUM", "null")) ||
                 match(new Token("SEPARATOR","("));
     }
@@ -487,6 +505,7 @@ public class SyntaxParser {
      * 
      */
     private void selection_stmt(){
+        System.out.println("selection_stmt");
         consume(new Token("KEYWORD","if"));
         consume(new Token("SEPARATOR","("));
         expression();
@@ -503,6 +522,7 @@ public class SyntaxParser {
      * 
      */
     private void iteration_stmt(){
+        System.out.println("iteration_stmt");
         consume(new Token("KEYWORD","while"));
         consume(new Token("SEPARATOR","("));
         expression();
@@ -515,6 +535,7 @@ public class SyntaxParser {
      * 
      */
     private void return_stmt(){
+        System.out.println("return_stmt");
         consume(new Token("KEYWORD","return"));
         if(!match(new Token("SEPARATOR",";"))){
             expression();
@@ -527,6 +548,7 @@ public class SyntaxParser {
      * 为var或者simple_expression时进入expression
      */
     private void expression(){
+        System.out.println("expression");
         //todo:完善判断逻辑
         Token Assign = new Token("OPERATOR","=");
         if(isVar()){
@@ -546,6 +568,8 @@ public class SyntaxParser {
                 consume(Assign);
                 expression();
                 return;
+            }else{
+                simple_expression();
             }
         }else{
             simple_expression();
@@ -555,6 +579,7 @@ public class SyntaxParser {
     private boolean isVar() {
         return match(new Token("ID","null"));
     }
+
     private boolean isSimpleExpression(Token token) {
         return isEqual(token,new Token("ID","null")) || isEqual(token,new Token("NUM","null")) ||
                 isEqual(token,new Token("SEPARATOR","("));
@@ -565,6 +590,7 @@ public class SyntaxParser {
      * 为ID时进入var
      */
     private void var() {
+        System.out.println("var");
         consume(new Token("ID","null"));
         if(match(new Token("SEPARATOR","["))){
             consume(new Token("SEPARATOR","["));
@@ -578,6 +604,7 @@ public class SyntaxParser {
      * 第一个为term时进入simple_expression
      */
     private void simple_expression() {
+        System.out.println("simple_expression");
         additive_expression();
         if (isRelop()) {
             relop();
@@ -596,6 +623,7 @@ public class SyntaxParser {
      * 
      */
     private void relop() {
+        System.out.println("relop");
         if(isRelop()){
             advance();
         }else{
@@ -610,6 +638,7 @@ public class SyntaxParser {
      * 
      */
     private void additive_expression() {
+        System.out.println("additive_expression");
         term();
         additive_expression1();
     }
@@ -619,6 +648,7 @@ public class SyntaxParser {
      * 
      */
     private void additive_expression1() {
+        System.out.println("additive_expression1");
         while(isAddop()){
             addop();
             term();
@@ -651,6 +681,7 @@ public class SyntaxParser {
      * 
      */
     private void addop(){
+        System.out.println("addop");
         if(isAddop()){
             advance();
         }else{
@@ -665,6 +696,7 @@ public class SyntaxParser {
      * 为factor时进入term
      */
     private void term() {
+        System.out.println("term");
         factor();
         term1();
     }
@@ -674,6 +706,7 @@ public class SyntaxParser {
      * 
      */
     private void term1() {
+        System.out.println("term1");
         while(isMulop()){
             mulop();
             factor();
@@ -688,6 +721,7 @@ public class SyntaxParser {
      * 文法25
      */
     private void mulop(){
+        System.out.println("mulop");
        if(isMulop()){
             advance();
         }else{
@@ -702,6 +736,7 @@ public class SyntaxParser {
      * 为( ID  NUM时进入factor 
      */
     private void factor() {
+        System.out.println("factor");
         Token leftBracket = new Token("SEPARATOR", "(");
         Token ID = new Token("ID", "null");
         Token NUM = new Token("NUM", "null");
@@ -738,6 +773,7 @@ public class SyntaxParser {
      * 
      */
     private void call() {
+        System.out.println("call");
         consume(new Token("ID","null"));
         consume(new Token("SEPARATOR","("));
         args();
@@ -749,6 +785,7 @@ public class SyntaxParser {
      * 
      */
     private void args() {
+        System.out.println("args");
         if(isExpression()){
             args_list();
         }
@@ -760,6 +797,7 @@ public class SyntaxParser {
      * 
      */
     private void args_list() {
+        System.out.println("args_list");
         expression();
         args_list1();
     }
@@ -769,6 +807,7 @@ public class SyntaxParser {
      * 
      */
     private void args_list1() {
+        System.out.println("args_list1");
         Token comma = new Token("SEPARATOR", ",");
         while (match(comma)) {
             consume(comma);
