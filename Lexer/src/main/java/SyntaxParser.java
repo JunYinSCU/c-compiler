@@ -500,22 +500,21 @@ public class SyntaxParser {
      */
     private void expression(){
         System.out.println("expression");
+        System.out.println("current: " + getCurrent().getValue());
         //todo:完善判断逻辑
         Token Assign = new Token("OPERATOR","=");
         if(isVar()){
             Token next = next();
-
+            System.out.println("next: " + next.getValue());
             if(isEqual(next,new Token("SEPARATOR","["))){
                 Token nextNext = lookAheadN(2);
-
                 if(isSimpleExpression(nextNext)){
-                    var();
-                    consume(Assign);
-                    expression();
+                    simple_expression();
                     return;
                 }               
             }else if(isEqual(next,new Token("OPERATOR","="))){
                 var();
+                System.out.println("consume assign");
                 consume(Assign);
                 expression();
                 return;
@@ -605,22 +604,6 @@ public class SyntaxParser {
             term();
         }
         
-
-        //todo：另一种想法，只不过需要合并additive_expression1和addop的处理，需要判断哪种更合理
-        // Token plus = new Token("OPERATOR", "+");
-        // Token minus = new Token("OPERATOR", "-");
-        // if(match(plus)){
-        //     consume(plus);
-        //     term();
-        //     additive_expression1();
-        // }else if(match(minus)){
-        //     consume(minus);
-        //     term();
-        //     additive_expression1();
-        // }else{
-        //     //todo：如果为空
-        // }
-        
     }
 
     private boolean isAddop() {
@@ -691,6 +674,7 @@ public class SyntaxParser {
         Token leftBracket = new Token("SEPARATOR", "(");
         Token ID = new Token("ID", "null");
         Token NUM = new Token("NUM", "null");
+        System.out.println("current: " + getCurrent().getValue());
         if(!isAtEnd()){
             if (match(leftBracket)) {
                 consume(leftBracket);
