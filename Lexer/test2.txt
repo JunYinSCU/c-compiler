@@ -1,0 +1,74 @@
+int main(void) {
+  int x;
+  int y[5];
+  int result;
+  int anotherResult;
+  x = 10;
+  y[0] = x;
+  {
+    int localVar;
+    localVar = y[0] + 5;
+  }
+  if (x > 5) {
+    x = x - 2;
+  } else {
+    x = x + 2;
+  }
+  if (x == 8)
+    return x;
+   
+  result = add(y[0], getValue());
+  
+  anotherResult = (add(5, getValue())) * 2;
+
+  while (y < 15) {
+    y = y + 1;
+  }
+
+  if (x <= 10) return 0;
+  if (x < 10) return 0;
+  if (x > 10) return 0;
+  if (x >= 10) return 0;
+  if (x == 10) return 0;
+  if (x != 10) return 0;
+  return 0;
+}
+
+int add(int a, int b) {
+  return a + b;
+}
+
+void printArray(int arr[], int size) {
+  int i;
+  i = 0;
+  while (i < size) {
+    int temp;
+    temp = arr[i];
+    i = i + 1;
+  }
+  return;
+}
+
+int getValue(void) {
+  return 10;
+}
+
+int multiply(int a, int b) {
+  return a * b;
+}
+
+int divide(int a, int b) {
+  return a / b;
+}
+
+int compare(void) {
+  int val1;
+  int val2[1];
+  val1 = 5;
+  val2[0] = 10;
+  if (val1 <= val2[0]) {
+    return 1;
+  } else {
+    return 0;
+  }
+}

@@ -1,0 +1,14 @@
+< KEYWORD , int , (row=1 , column=0) >
+< ID , main , (row=1 , column=4) >
+< SEPARATOR , ( , (row=1 , column=8) >
+< KEYWORD , void , (row=1 , column=9) >
+< SEPARATOR , ) , (row=1 , column=13) >
+< SEPARATOR , { , (row=1 , column=14) >
+< KEYWORD , int , (row=2 , column=4) >
+< ID , a , (row=2 , column=8) >
+< SEPARATOR , ; , (row=2 , column=9) >
+< ID , a , (row=3 , column=4) >
+< OPERATOR , != , (row=3 , column=6) >
+< NUM , 1 , (row=3 , column=9) >
+< SEPARATOR , ; , (row=3 , column=10) >
+< SEPARATOR , } , (row=4 , column=0) >

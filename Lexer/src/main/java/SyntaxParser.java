@@ -13,7 +13,6 @@ public class SyntaxParser {
 
     private int current = 0;
 
-    private String inputFile = "input.txt";
     private String outputFile = "output.txt";
     private BufferedWriter output;
 
@@ -21,45 +20,6 @@ public class SyntaxParser {
         return this.tokens;
     }
 
-    private LinkedList<Token> getTokensFormFile(String inputFile) {
-        LinkedList<Token> tokens = new LinkedList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // 使用正则表达式匹配 Token 字符串的各个部分
-                Pattern pattern = Pattern.compile("<\\s*type=([^,\\s]+)\\s*,\\s*value=([^,\\s]*)\\s*,\\s*\\(\\s*row=(\\d+)\\s*,\\s*column=(\\d+)\\s*\\)\\s*>");
-
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    String type = matcher.group(1).trim();
-                    if(type.equals("COMMENT")){ // 忽略注释
-                        continue;
-                    }
-                    String value = matcher.group(2).trim();
-                    int row = Integer.parseInt(matcher.group(3).trim());
-                    int column = Integer.parseInt(matcher.group(4).trim());
-                    tokens.add(new Token(type, value, row, column));
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("读取文件时发生错误: " + e.getMessage());
-        }
-        return tokens;
-    }
-
-    public SyntaxParser(String inputFile, String outputFile) {
-        
-        this.inputFile = inputFile;
-        this.outputFile = outputFile;
-        this.tokens = getTokensFormFile(inputFile);
-        tokens.addLast(EOFToken);
-        try {
-            output = new BufferedWriter(new FileWriter(outputFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     public SyntaxParser(LinkedList<Token> tokens, String outputFile) {
         LinkedList<Token> filteredTokens = new LinkedList<>();
@@ -70,16 +30,6 @@ public class SyntaxParser {
         }
         this.tokens = filteredTokens;
         this.tokens.addLast(EOFToken);
-        try {
-            output = new BufferedWriter(new FileWriter(this.outputFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public SyntaxParser() {
-        this.tokens = getTokensFormFile(inputFile);
-        tokens.addLast(EOFToken);
         try {
             output = new BufferedWriter(new FileWriter(this.outputFile));
         } catch (IOException e) {
@@ -291,7 +241,6 @@ public class SyntaxParser {
      */
     private void fun_declaration() {
         System.out.println("fun_declaration");
-        System.out.println(getCurrent());
         type_specifier();
         consume(new Token("ID","null"));
         consume(new Token("SEPARATOR","("));
@@ -364,7 +313,6 @@ public class SyntaxParser {
     private void param_list1(){
         System.out.println("param_list1");
         Token commaToken = new Token("SEPARATOR",",");
-        System.out.println(match(commaToken));
         while(match(commaToken)){
             consume(commaToken);
             param();
@@ -575,8 +523,6 @@ public class SyntaxParser {
                 simple_expression();
             }
         }else{
-            System.out.println("333333333");
-            System.out.println(getCurrent());
             simple_expression();
         }    
     }

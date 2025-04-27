@@ -384,6 +384,7 @@ public class Analyzer {
 						outPutToken(notEqualToken);
 						lexemeBuffer.clear();
 						state = STATE_INITIAL;
+						index++;
 					}
 					break;
 

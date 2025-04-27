@@ -8,7 +8,7 @@ public class Token {
 
 	@Override
 	public String toString() {
-		String string = "< type=" + this.type + " , value=" + this.value 
+		String string = "< " + this.type + " , " + this.value 
             + " , (row=" + this.row + " , column=" + this.column + ") >";
     	return string;
 	}
