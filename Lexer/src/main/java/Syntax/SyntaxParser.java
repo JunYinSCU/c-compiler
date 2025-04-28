@@ -1,13 +1,9 @@
 package Syntax;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import Lexical.Token;
 
 public class SyntaxParser {
@@ -16,7 +12,8 @@ public class SyntaxParser {
     private int current = 0;    // 当前token指针
     private String outputFile = "SyntaxOutput.txt";     // 输出文件名
     private BufferedWriter output;
-    private ASTNode root;
+    private ASTNode root;   // 语法树根节点
+    boolean hasError = false; // 是否存在语法错误
 
     public LinkedList<Token> getTokens() {
         return this.tokens;
@@ -177,7 +174,7 @@ public class SyntaxParser {
      * 主程序入口
      */
     public void parse() throws ParserException{
-        root = program();      
+        this.root = program();      
         System.out.println("Syntax analysis completed. No syntax errors found.");
     }
 

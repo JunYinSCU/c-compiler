@@ -24,14 +24,32 @@ public  class ASTNode {
     public String getName() {
         return name;
     }
-    
-    public void print(String indent) {
-        // 打印当前节点的名字
-        System.out.println(indent + "|-- " + name);
-    
-        // 遍历所有子节点并递归打印
-        for (ASTNode child : children) {
-            child.print(indent + "   "); // 每一层递归时增加更多的空格
+
+    private void printHelper(String indent, boolean isLast) {
+        System.out.print(indent);
+        if (isLast) {
+            System.out.print("`-- ");
+        } else {
+            System.out.print("|-- ");
+        }
+        System.out.println(name);
+
+        int childrenCount = children.size();
+        for (int i = 0; i < childrenCount; i++) {
+            ASTNode child = children.get(i);
+            String newIndent;
+            if (isLast) {
+                newIndent = indent + "    ";
+            } else {
+                newIndent = indent + "|   ";
+            }
+            child.printHelper(newIndent, i == childrenCount - 1);
         }
     }
+
+    public void print() {
+        printHelper("", true);
+    }
+
+ 
 }
