@@ -1,5 +1,4 @@
 package Syntax;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -70,7 +69,9 @@ public class SyntaxParser {
      * 向后移动一位
      */
     private void back() {
-        current--;
+        if(current > 0){
+            current--;
+        }
     }
 
     /*
