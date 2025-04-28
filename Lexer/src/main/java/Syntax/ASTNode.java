@@ -3,7 +3,8 @@ package Syntax;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ASTNode {
+public  class ASTNode {
+    private String name;
     protected List<ASTNode> children = new ArrayList<>();
 
     public List<ASTNode> getChildren() {
@@ -16,16 +17,21 @@ public abstract class ASTNode {
         }
     }
 
-    protected int lineNumber;
-
-    public int getLineNumber() {
-        return lineNumber;
+    public ASTNode(String name) {
+        this.name = name;
     }
 
-    public void setLineNumber(int lineNumber) {
-        this.lineNumber = lineNumber;
+    public String getName() {
+        return name;
     }
-
-
-    public abstract void print(String indent);
+    
+    public void print(String indent) {
+        // 打印当前节点的名字
+        System.out.println(indent + "|-- " + name);
+    
+        // 遍历所有子节点并递归打印
+        for (ASTNode child : children) {
+            child.print(indent + "   "); // 每一层递归时增加更多的空格
+        }
+    }
 }

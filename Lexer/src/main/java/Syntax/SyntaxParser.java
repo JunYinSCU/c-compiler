@@ -16,12 +16,15 @@ public class SyntaxParser {
     private int current = 0;    // 当前token指针
     private String outputFile = "SyntaxOutput.txt";     // 输出文件名
     private BufferedWriter output;
-    private int errorNum = 0; // 语法错误数量
+    private ASTNode root;
 
     public LinkedList<Token> getTokens() {
         return this.tokens;
     }
 
+    public ASTNode getRoot() {
+        return this.root;
+    }
 
     public SyntaxParser(LinkedList<Token> tokens, String outputFile) {
         LinkedList<Token> filteredTokens = new LinkedList<>();
@@ -152,12 +155,14 @@ public class SyntaxParser {
      * 无论是否匹配成功，都会将指针向前移动一位
      * 如果匹配失败，则调用error方法,提示当前token错误
      */
-    private void consume(Token expectedToken) throws ParserException {
+    private ASTNode consume(Token expectedToken) throws ParserException {
         if (!match(expectedToken)) {
             String errorMessage = "Expected "+ expectedToken.getValue()+" at here";
             error(errorMessage,getCurrent());     
         }
-        advance();     
+        ASTNode node = new ASTNode(getCurrent().getValue());
+        advance();  
+        return node;   
     }
 
 
@@ -172,102 +177,130 @@ public class SyntaxParser {
      * 主程序入口
      */
     public void parse() throws ParserException{
-        program();      
-        System.out.println("Syntax analysis completed.");
-        if(errorNum > 0) {
-            System.out.println("Total syntax errors: " + errorNum);
-        } else {
-            System.out.println("No syntax errors found.");
-        }
+        root = program();      
+        System.out.println("Syntax analysis completed. No syntax errors found.");
     }
 
     /*
      * 文法1
      */
-    private void program() throws ParserException{
+    private ASTNode program() throws ParserException{
         System.out.println("program");
-        declaration_list();
+        //创建AST根节点
+        ASTNode programNode = new ASTNode("Program");
+
+        ASTNode declarationListNode = declaration_list();
+        programNode.addChild(declarationListNode);
+
         //语法分析完成
         //如果还有多余的token，则说明语法存在错误
         if(!isAtEnd()) {
             error("Unexpected tokens at the end of input: ",getCurrent());
         }
+
+        return programNode;
     }
 
     /*
      * 文法2.1
      */
-    private void declaration_list() throws ParserException{
+    private ASTNode declaration_list() throws ParserException{
         System.out.println("declaration_list");
-        declaration();
-        declaration_list1();
+        ASTNode declarationListNode = new ASTNode("declaration-list");
+
+        ASTNode declarationNode = declaration();
+        declarationListNode.addChild(declarationNode);
+
+        LinkedList<ASTNode> declarationList= declaration_list1();
+        for (ASTNode node : declarationList) {
+            declarationListNode.addChild(node);
+        }
+        return declarationListNode;
     }
 
     /*
     * 文法2.2
     * 
     */
-    private void declaration_list1() throws ParserException{
+    private LinkedList<ASTNode> declaration_list1() throws ParserException{
         System.out.println("declaration_list1");
+        LinkedList<ASTNode> declarations = new LinkedList<>();
         //var_declaration和fun_declaration类型定义实际都归结于type_specifier的int或者void
         while(isTypeSpecifier()) {
-            declaration();
+            declarations.add(declaration());
         }
         // ε 时不处理
+        return declarations;
     }
 
     /*
     * 文法3
     * 
     */
-    private void declaration() throws ParserException{
+    private ASTNode declaration() throws ParserException{
         System.out.println("declaration");
-    
+        ASTNode declarationNode = new ASTNode("declaration");
+
         if(isTypeSpecifier()){
             Token nextNext = lookAheadN(2); //获取第二个token判断是var还是fun            
             if(nextNext.getValue().equals(";") ||nextNext.getValue().equals("[")){
-                var_declaration();
+                ASTNode varDeclarationNode = var_declaration();
+                declarationNode.addChild(varDeclarationNode);
             }else if(nextNext.getValue().equals( "(")){
-                fun_declaration();
+                ASTNode funDeclarationNode = fun_declaration();
+                declarationNode.addChild(funDeclarationNode);
             }
         }else{          
             error("Expected 'int' or 'void' at the beginning of a declaration", getCurrent());
         }
+
+        return declarationNode;
     }
 
     /*
      * 文法4
      */
-    private void var_declaration() throws ParserException{
+    private ASTNode var_declaration() throws ParserException{
         System.out.println("var_declaration");
-        type_specifier();
+        ASTNode varDeclarationNode = new ASTNode("var-declaration");
+
+        ASTNode typeSpecifierNode = type_specifier();
+        varDeclarationNode.addChild(typeSpecifierNode);
+
         //对终结符进行匹配消耗
-        consume(new Token("ID","null"));
+        varDeclarationNode.addChild(consume(new Token("ID","null")));
+
         if(match(new Token("SEPARATOR","["))){
-            consume(new Token("SEPARATOR","["));
-            consume(new Token("NUM","null"));
-            consume(new Token("SEPARATOR","]"));
+            varDeclarationNode.addChild(consume(new Token("SEPARATOR","[")));
+            varDeclarationNode.addChild(consume(new Token("NUM","null")));
+            varDeclarationNode.addChild(consume(new Token("SEPARATOR","]")));
         }
-        consume(new Token("SEPARATOR",";"));
+
+        varDeclarationNode.addChild(consume(new Token("SEPARATOR",";")));
+
+        return varDeclarationNode;
     }
 
     /*
      * 文法5
      */
-    private void type_specifier()throws ParserException{
+    private ASTNode type_specifier()throws ParserException{
         System.out.println("type_specifier");
+        ASTNode typeSpecifierNode = new ASTNode("type-specifier");
+
         Token INTtoken = new Token("KEYWORD","int");
         Token VOIDtoken = new Token("KEYWORD","void");
 
         if(match(INTtoken)){
-            consume(INTtoken);
+            typeSpecifierNode.addChild(consume(INTtoken));
         }else if(match(VOIDtoken)){
-            consume(VOIDtoken);
+            typeSpecifierNode.addChild(consume(VOIDtoken));
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
             error("Expected 'int' or 'void'",getCurrent());
             advance();
         }
+        return typeSpecifierNode;
     }
 
     private boolean isTypeSpecifier(){
@@ -279,120 +312,165 @@ public class SyntaxParser {
     /*
      * 文法6
      */
-    private void fun_declaration()throws ParserException {
+    private ASTNode fun_declaration()throws ParserException {
         System.out.println("fun_declaration");
-        type_specifier();
-        consume(new Token("ID","null"));
-        consume(new Token("SEPARATOR","("));
-        params();
-        consume(new Token("SEPARATOR",")"));
-        compound_stmt();
+        ASTNode funDeclarationNode = new ASTNode("fun-declaration");
+
+        funDeclarationNode.addChild(type_specifier());
+
+        funDeclarationNode.addChild(consume(new Token("ID","null")));
+        funDeclarationNode.addChild(consume(new Token("SEPARATOR","(")));
+        funDeclarationNode.addChild(params());
+        funDeclarationNode.addChild(consume(new Token("SEPARATOR",")")));
+        funDeclarationNode.addChild(compound_stmt());
+
+        return funDeclarationNode;
     }
     
     /*
      * 文法7
      */
-    private void params()throws ParserException{
+    private ASTNode params()throws ParserException{
         System.out.println("params");
+        ASTNode paramsNode = new ASTNode("params");
+
         Token voidToken = new Token("KEYWORD","void");
         if(match(voidToken)){
-            consume(voidToken);
+            paramsNode.addChild(consume(voidToken));
         }else{
-            param_list();
+            paramsNode.addChild(param_list());
         }
+
+        return paramsNode;
     }
 
     /*
      * 文法8.1
      */
-    private void param_list()throws ParserException{
+    private ASTNode param_list()throws ParserException{
         System.out.println("param_list");
-        param();
-        param_list1();
+        ASTNode paramListNode = new ASTNode("param-list");
+        paramListNode.addChild(param());
+
+        LinkedList<ASTNode> paramList = param_list1();
+        for (ASTNode node : paramList) {
+            paramListNode.addChild(node);
+        }
+
+        return paramListNode;
     }
 
     /*
      * 文法8.2
      */
-    private void param_list1()throws ParserException{
+    private LinkedList<ASTNode> param_list1()throws ParserException{
         System.out.println("param_list1");
+        LinkedList<ASTNode> paramList = new LinkedList<>();
         Token commaToken = new Token("SEPARATOR",",");
         while(match(commaToken)){
-            consume(commaToken);
-            param();
+            paramList.add(consume(commaToken));
+            paramList.add(param());
         }
         // ε 时不处理
-
+        return paramList;
     }
 
     /*
      * 文法9
      */
-    private void param()throws ParserException{
+    private ASTNode param()throws ParserException{
         System.out.println("param");
-        type_specifier();
+        ASTNode paramNode = new ASTNode("param");
+
+        paramNode.addChild(type_specifier());
 
         Token ID = new Token("ID","null");       
-        consume(ID);
+        paramNode.addChild(consume(ID));
 
         Token leftBracket = new Token("SEPARATOR","[");
         if(match(leftBracket)){
-            consume(leftBracket);
-            consume(new Token("SEPARATOR","]"));
+            paramNode.addChild(consume(leftBracket));
+            paramNode.addChild(consume(new Token("SEPARATOR","]")));
         }
+
+        return paramNode;
     }
 
     /*
      * 文法10
      */
-    private void compound_stmt()throws ParserException{
+    private ASTNode compound_stmt()throws ParserException{
         System.out.println("compound_stmt");
-        consume(new Token("SEPARATOR","{"));
-        local_declarations();
-        statement_list();
-        consume(new Token("SEPARATOR","}"));
+        ASTNode compoundStmtNode = new ASTNode("compound-stmt");
+
+        compoundStmtNode.addChild(consume(new Token("SEPARATOR","{")));
+        compoundStmtNode.addChild(local_declarations());
+        compoundStmtNode.addChild(statement_list());
+        compoundStmtNode.addChild(consume(new Token("SEPARATOR","}")));
+
+        return compoundStmtNode;
     }
 
     /*
      * 文法11.1
      * 
      */
-    private void local_declarations()throws ParserException{
+    private ASTNode local_declarations()throws ParserException{
         System.out.println("local_declarations");
-        local_declarations1();
+        ASTNode localDeclarationsNode = new ASTNode("local-declarations");
+
+        LinkedList<ASTNode> list = local_declarations1();
+        for (ASTNode node : list) {
+            localDeclarationsNode.addChild(node);
+        }
+
+        return localDeclarationsNode;
     }
 
     /*
      * 文法11.2
      * 
      */
-    private void local_declarations1()throws ParserException{
+    private LinkedList<ASTNode> local_declarations1()throws ParserException{
         System.out.println("local_declarations1");
+        LinkedList<ASTNode> localDeclarations = new LinkedList<>();
         while(isTypeSpecifier()){
-            var_declaration();
+            localDeclarations.add(var_declaration());
         }
         // ε 时不处理
+
+        return localDeclarations;
     }
 
     /*
      * 文法12.1
      * 
      */
-    private void statement_list()throws ParserException{
+    private ASTNode statement_list()throws ParserException{
         System.out.println("statement_list");
-        statement_list1();
+        ASTNode statementListNode = new ASTNode("statement-list");
+
+        LinkedList<ASTNode> statementList = statement_list1();
+        for (ASTNode node : statementList) {
+            statementListNode.addChild(node);
+        }
+
+        return statementListNode;
     }
 
     /*
      * 文法12.2
      * 
      */
-    private void statement_list1()throws ParserException{
+    private LinkedList<ASTNode> statement_list1()throws ParserException{
         System.out.println("statement_list1");
+        LinkedList<ASTNode> statementList = new LinkedList<>();
         while(isStatement()){
-            statement();
+            statementList.add(statement());
         }
         // ε 时不处理
+
+        return statementList;
     }
 
     private boolean isStatement() {
@@ -404,19 +482,21 @@ public class SyntaxParser {
      * 文法13
      * 为expression_stmt、compound_stmt、selection_stmt、iteration_stmt、return_stmt时进入statement
      */
-    private void statement() throws ParserException{
+    private ASTNode statement() throws ParserException{
         System.out.println("statement");
+        ASTNode statementNode = new ASTNode("statement");
+
         if(!isAtEnd()){
             if(isExpressionStmt()){
-                expression_stmt();
+                statementNode.addChild(expression_stmt());
             }else if(isCompoundStmt()){
-                compound_stmt();
+                statementNode.addChild(compound_stmt());
             }else if(isSelectionStmt()){
-                selection_stmt();
+                statementNode.addChild(selection_stmt());
             }else if(isIterationStmt()){
-                iteration_stmt();
+                statementNode.addChild(iteration_stmt());
             }else if(isReturnStmt()){
-                return_stmt();
+                statementNode.addChild(return_stmt());
             }else{
                 //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
                 error("Unexpected token at the start of a statement.",getCurrent());
@@ -425,6 +505,8 @@ public class SyntaxParser {
         }else{
             error("Expected a statement but found end of input", getCurrent());
         }
+
+        return statementNode;
         
     }
 
@@ -452,12 +534,17 @@ public class SyntaxParser {
      * 文法14
      * 为expression或者;时进入expression_stmt
      */
-    private void expression_stmt() throws ParserException{
+    private ASTNode expression_stmt() throws ParserException{
         System.out.println("expression_stmt");
+        ASTNode expressionStmtNode = new ASTNode("expression-stmt");
+        
         if(isExpression()){
-            expression();
+            expressionStmtNode.addChild(expression());
         } 
-        consume(new Token("SEPARATOR",";"));
+
+        expressionStmtNode.addChild(consume(new Token("SEPARATOR",";")));
+
+        return expressionStmtNode;
     }
 
     private boolean isExpression() {
@@ -471,43 +558,56 @@ public class SyntaxParser {
      * 文法15
      * 
      */
-    private void selection_stmt()throws ParserException{
+    private ASTNode selection_stmt()throws ParserException{
         System.out.println("selection_stmt");
-        consume(new Token("KEYWORD","if"));
-        consume(new Token("SEPARATOR","("));
-        expression();
-        consume(new Token("SEPARATOR",")"));
-        statement();
+        ASTNode selectionStmtNode = new ASTNode("selection-stmt");
+
+        selectionStmtNode.addChild(consume(new Token("KEYWORD","if")));
+        selectionStmtNode.addChild(consume(new Token("SEPARATOR","(")));
+        selectionStmtNode.addChild(expression());
+        selectionStmtNode.addChild(consume(new Token("SEPARATOR",")")));
+        selectionStmtNode.addChild(statement());
+
         if(match(new Token("KEYWORD","else"))){
-            consume(new Token("KEYWORD","else"));
-            statement();
+            selectionStmtNode.addChild(consume(new Token("KEYWORD","else")));
+            selectionStmtNode.addChild(statement());
         }
+
+        return selectionStmtNode;
     }
 
     /*
      * 文法16
      * 
      */
-    private void iteration_stmt()throws ParserException{
+    private ASTNode iteration_stmt()throws ParserException{
         System.out.println("iteration_stmt");
-        consume(new Token("KEYWORD","while"));
-        consume(new Token("SEPARATOR","("));
-        expression();
-        consume(new Token("SEPARATOR",")"));
-        statement();
+        ASTNode iterationStmtNode = new ASTNode("iteration-stmt");
+
+        iterationStmtNode.addChild(consume(new Token("KEYWORD","while")));
+        iterationStmtNode.addChild(consume(new Token("SEPARATOR","(")));
+        iterationStmtNode.addChild(expression());
+        iterationStmtNode.addChild(consume(new Token("SEPARATOR",")")));
+        iterationStmtNode.addChild(statement());
+
+        return iterationStmtNode;
     }
 
     /*
      * 文法17
      * 
      */
-    private void return_stmt()throws ParserException{
+    private ASTNode return_stmt()throws ParserException{
         System.out.println("return_stmt");
-        consume(new Token("KEYWORD","return"));
+        ASTNode returnStmtNode = new ASTNode("return-stmt");
+
+        returnStmtNode.addChild(consume(new Token("KEYWORD","return")));
         if(!match(new Token("SEPARATOR",";"))){
-            expression();
+            returnStmtNode.addChild(expression());
         }
-        consume(new Token("SEPARATOR",";"));
+        returnStmtNode.addChild(consume(new Token("SEPARATOR",";")));
+
+        return returnStmtNode;
     }
 
     /*
@@ -515,22 +615,24 @@ public class SyntaxParser {
      * 为var或者simple_expression时进入expression
      * expression文法定义较为复杂
      */
-    private void expression()throws ParserException{
+    private ASTNode expression()throws ParserException{
         System.out.println("expression");
+        ASTNode expressionNode = new ASTNode("expression");
+
         // 先保存当前Token位置，方便回溯
         int savePos = current;
 
         if (isVar()) {
             // 先尝试识别var
-            var();
+            expressionNode.addChild(var());
 
             // 看下一个Token
             Token next = getCurrent();
             if (isEqual(next, new Token("OPERATOR", "="))) {
                 // 确认是赋值表达式 var = expression
-                consume(new Token("OPERATOR", "="));
-                expression();
-                return;
+                expressionNode.addChild(consume(new Token("OPERATOR", "=")));
+                expressionNode.addChild(expression());
+                return expressionNode;
             } else {
                 // 不是赋值，回溯到var前的位置，识别simple-expression
                 current = savePos;
@@ -538,7 +640,9 @@ public class SyntaxParser {
         }
 
         // 否则走 simple-expression
-        simple_expression();  
+        expressionNode.addChild(simple_expression());  
+
+        return expressionNode;
     }
 
     private boolean isVar() {
@@ -555,27 +659,37 @@ public class SyntaxParser {
      * 文法19
      * 为ID时进入var
      */
-    private void var() throws ParserException{
+    private ASTNode var() throws ParserException{
         System.out.println("var");
-        consume(new Token("ID","null"));
+        ASTNode varNode = new ASTNode("var");
+
+        varNode.addChild(consume(new Token("ID","null")));
+
         if(match(new Token("SEPARATOR","["))){
-            consume(new Token("SEPARATOR","["));
-            expression();
-            consume(new Token("SEPARATOR","]"));
+            varNode.addChild(consume(new Token("SEPARATOR","[")));
+            varNode.addChild(expression());
+            varNode.addChild(consume(new Token("SEPARATOR","]")));
         }
+
+        return varNode;
     }
 
     /*
      * 文法20
      * 第一个为term时进入simple_expression
      */
-    private void simple_expression() throws ParserException{
+    private ASTNode simple_expression() throws ParserException{
         System.out.println("simple_expression");
-        additive_expression();
+        ASTNode simpleExpressionNode = new ASTNode("simple-expression");
+
+        simpleExpressionNode.addChild(additive_expression());
+
         if (isRelop()) {
-            relop();
-            additive_expression();
+            simpleExpressionNode.addChild(relop());
+            simpleExpressionNode.addChild(additive_expression());
         }
+
+        return simpleExpressionNode;
     }
 
     private boolean isRelop() {
@@ -588,37 +702,54 @@ public class SyntaxParser {
      * 文法21
      * 
      */
-    private void relop() throws ParserException{
+    private ASTNode relop() throws ParserException{
         System.out.println("relop");
+        ASTNode relopNode = new ASTNode("relop");
+
         if(isRelop()){
+            ASTNode relop = new ASTNode(getCurrent().getValue());
+            relopNode.addChild(relop);
             advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
             error("Expected relop e.g. <= < >= > ... here",getCurrent());
             advance();
         }
+
+        return relopNode;
     }
 
     /*
      * 文法22.1
      * 
      */
-    private void additive_expression() throws ParserException{
+    private ASTNode additive_expression() throws ParserException{
         System.out.println("additive_expression");
-        term();
-        additive_expression1();
+        ASTNode additiveExpressionNode = new ASTNode("additive-expression");
+
+        additiveExpressionNode.addChild(term());
+
+        LinkedList<ASTNode> list = additive_expression1();
+        for (ASTNode node : list) {
+            additiveExpressionNode.addChild(node);
+        }
+        return additiveExpressionNode;
     }
 
     /*
      * 文法22.2
      * 
      */
-    private void additive_expression1()throws ParserException {
+    private LinkedList<ASTNode> additive_expression1()throws ParserException {
         System.out.println("additive_expression1");
+        LinkedList<ASTNode> additiveExpressionList = new LinkedList<>();
+
         while(isAddop()){
-            addop();
-            term();
+            additiveExpressionList.add(addop());
+            additiveExpressionList.add(term());
         }
+
+        return additiveExpressionList;
         
     }
 
@@ -631,37 +762,55 @@ public class SyntaxParser {
      * 文法23
      * 
      */
-    private void addop()throws ParserException{
+    private ASTNode addop()throws ParserException{
         System.out.println("addop");
+        ASTNode addopNode = new ASTNode("addop");
+
         if(isAddop()){
+            ASTNode addop = new ASTNode(getCurrent().getValue());
+            addopNode.addChild(addop);
             advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
             error("Expected '+' or '-' here",getCurrent());
             advance();
         }
+
+        return addopNode;
     }
 
     /*
      * 文法24.1
      * 为factor时进入term
      */
-    private void term() throws ParserException{
+    private ASTNode term() throws ParserException{
         System.out.println("term");
-        factor();
-        term1();
+        ASTNode termNode = new ASTNode("term");
+
+        termNode.addChild(factor());
+
+        LinkedList<ASTNode> termList = term1();
+        for (ASTNode node : termList) {
+            termNode.addChild(node);
+        }
+
+        return termNode;
     }
 
     /*
      * 文法24.2
      * 
      */
-    private void term1() throws ParserException{
+    private LinkedList<ASTNode> term1() throws ParserException{
         System.out.println("term1");
+        LinkedList<ASTNode> termList = new LinkedList<>();
+
         while(isMulop()){
-            mulop();
-            factor();
+            termList.add(mulop());
+            termList.add(factor());
         }
+
+        return termList;
     }
 
     private boolean isMulop() {
@@ -672,41 +821,49 @@ public class SyntaxParser {
     /* 
      * 文法25
      */
-    private void mulop()throws ParserException{
+    private ASTNode mulop()throws ParserException{
         System.out.println("mulop");
+        ASTNode mulopNode = new ASTNode("mulop");
+
        if(isMulop()){
+            ASTNode mulop = new ASTNode(getCurrent().getValue());
+            mulopNode.addChild(mulop);
             advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
             error("Expected '*' or '/' here ",getCurrent());
             advance();
         }
+
+        return mulopNode;
     }
 
     /*
      * 文法26
      * 为( ID  NUM时进入factor 
      */
-    private void factor() throws ParserException{
+    private ASTNode factor() throws ParserException{
         System.out.println("factor");
+        ASTNode factorNode = new ASTNode("factor");
+
         Token leftBracket = new Token("SEPARATOR", "(");
         Token ID = new Token("ID", "null");
         Token NUM = new Token("NUM", "null");
 
         if(!isAtEnd()){
             if (match(leftBracket)) {   //匹配 ( , 则为(expression)的情况
-                consume(leftBracket);
-                expression();
-                consume(new Token("SEPARATOR", ")"));
+                factorNode.addChild(consume(leftBracket));
+                factorNode.addChild(expression());
+                factorNode.addChild(consume(new Token("SEPARATOR", ")")));
             } else if (match(ID)) {     //匹配ID，可能是函数调用或者变量
                 Token leftBracket1 = lookAheadN(1);     //继续获得下一个token
                 if(isEqual(leftBracket,leftBracket1)){      //如果下一个token为(，则为函数调用
-                    call();
+                    factorNode.addChild(call());
                 }else{      //否则为变量
-                    var();
+                    factorNode.addChild(var());
                 }
             } else if (match(NUM)) {    //匹配NUM，直接消耗
-                consume(NUM);
+                factorNode.addChild(consume(NUM));
             } else {
                 // 如果都不匹配，则说明当前是错误的token,提示错误并向前移动
                 error("Expected '(expression)', ID, call func or NUM as a factor here",getCurrent());
@@ -715,6 +872,8 @@ public class SyntaxParser {
         }else{
             error("Expected a factor but found end of input", getCurrent());
         }
+
+        return factorNode;
         
     }
 
@@ -722,23 +881,30 @@ public class SyntaxParser {
      * 文法27
      * 
      */
-    private void call() throws ParserException{
+    private ASTNode call() throws ParserException{
         System.out.println("call");
-        consume(new Token("ID","null"));
-        consume(new Token("SEPARATOR","("));
-        args();
-        consume(new Token("SEPARATOR",")"));
+        ASTNode callNode = new ASTNode("call");
+
+        callNode.addChild(consume(new Token("ID","null")));
+        callNode.addChild(consume(new Token("SEPARATOR","(")));
+        callNode.addChild(args());
+        callNode.addChild(consume(new Token("SEPARATOR",")")));
+
+        return callNode;
     }
 
     /*
      * 文法28
      * 
      */
-    private void args() throws ParserException{
+    private ASTNode args() throws ParserException{
         System.out.println("args");
+        ASTNode argsNode = new ASTNode("args");
         if(isExpression()){
-            args_list();
+            argsNode.addChild(args_list());
         }
+
+        return argsNode;
              
     }
 
@@ -746,23 +912,34 @@ public class SyntaxParser {
      * 文法29.1
      * 
      */
-    private void args_list() throws ParserException{
+    private ASTNode args_list() throws ParserException{
         System.out.println("args_list");
-        expression();
-        args_list1();
+        ASTNode argsListNode = new ASTNode("args-list");
+        argsListNode.addChild(expression());
+
+        LinkedList<ASTNode> list  = args_list1();
+        for (ASTNode node : list) {
+            argsListNode.addChild(node);
+        }
+        return argsListNode;
     }
 
     /*
      * 文法29.2
      * 
      */
-    private void args_list1() throws ParserException{
+    private LinkedList<ASTNode> args_list1() throws ParserException{
         System.out.println("args_list1");
+        LinkedList<ASTNode> argsList = new LinkedList<>();
+
         Token comma = new Token("SEPARATOR", ",");
+
         while (match(comma)) {
-            consume(comma);
-            expression();
+            argsList.add(consume(comma));
+            argsList.add(expression());
         }
+
+        return argsList;
     }
 
 }

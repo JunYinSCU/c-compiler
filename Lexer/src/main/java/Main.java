@@ -25,6 +25,8 @@ public class Main {
         } catch (ParserException e) {
             e.printStackTrace();
         }
+
+        parser.getRoot().print("");
         
         /*
          * 存在的bug：
