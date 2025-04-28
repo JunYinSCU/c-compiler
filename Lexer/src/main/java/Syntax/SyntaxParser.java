@@ -152,51 +152,26 @@ public class SyntaxParser {
      * 无论是否匹配成功，都会将指针向前移动一位
      * 如果匹配失败，则调用error方法,提示当前token错误
      */
-    private void consume(Token expectedToken) {
+    private void consume(Token expectedToken) throws ParserException {
         if (!match(expectedToken)) {
-            error(getCurrent());     
+            String errorMessage = "Expected "+ expectedToken.getValue()+" at here";
+            error(errorMessage,getCurrent());     
         }
         advance();     
     }
 
-    private void error(Token token) {
-        String errorMessage = "Error: " + token.getValue() + " is not a valid token at line " + token.getRow()
-                + ", column " + token.getColum();
-        System.out.println(errorMessage);
-        errorNum++;
-    }
 
-    private void error(String expected, Token currentToken) {
-        System.out.println(expected);
-        String errorMessage = "Current: " + currentToken.getValue() + " is not a valid token at line "
-                + currentToken.getRow() + ", column " + currentToken.getColum();
-        System.out.println(errorMessage);
-        errorNum++;
-    }
-
-    /*
-     * 通过传入的参数，寻找第一个匹配的位置，继续进行下一步语法判断
-     * 如果没有找到，则继续向后移动指针，直到找到为止
-     */
-    private void synchronize(String... expectedStarts) {
-        Token currentToken = getCurrent();
-        while (currentToken != null) {
-            for (String start : expectedStarts) {
-                if (currentToken.getValue().equals(start)) {
-                    return;
-                }
-            }
-            if (isStatement() || isTypeSpecifier()) {
-                return;
-            }
-            advance();
-        }
+    private void error(String expected, Token currentToken) throws ParserException {
+        String errorMessage = expected + "\n" +
+                              "Current: " + currentToken.getValue() + " is not a valid token at line " +
+                              currentToken.getRow() + ", column " + currentToken.getColum();
+        throw new ParserException(errorMessage);
     }
 
     /*
      * 主程序入口
      */
-    public void parse() {
+    public void parse() throws ParserException{
         program();      
         System.out.println("Syntax analysis completed.");
         if(errorNum > 0) {
@@ -209,20 +184,20 @@ public class SyntaxParser {
     /*
      * 文法1
      */
-    private void program() {
+    private void program() throws ParserException{
         System.out.println("program");
         declaration_list();
         //语法分析完成
         //如果还有多余的token，则说明语法存在错误
         if(!isAtEnd()) {
-            error("Error: Unexpected tokens at the end of input: ",getCurrent());
+            error("Unexpected tokens at the end of input: ",getCurrent());
         }
     }
 
     /*
      * 文法2.1
      */
-    private void declaration_list() {
+    private void declaration_list() throws ParserException{
         System.out.println("declaration_list");
         declaration();
         declaration_list1();
@@ -232,7 +207,7 @@ public class SyntaxParser {
     * 文法2.2
     * 
     */
-    private void declaration_list1() {
+    private void declaration_list1() throws ParserException{
         System.out.println("declaration_list1");
         //var_declaration和fun_declaration类型定义实际都归结于type_specifier的int或者void
         while(isTypeSpecifier()) {
@@ -245,9 +220,8 @@ public class SyntaxParser {
     * 文法3
     * 
     */
-    private void declaration() {
+    private void declaration() throws ParserException{
         System.out.println("declaration");
-        //todo：完善var_declaration和fun_declaration调用的判定条件
     
         if(isTypeSpecifier()){
             Token nextNext = lookAheadN(2); //获取第二个token判断是var还是fun            
@@ -257,15 +231,14 @@ public class SyntaxParser {
                 fun_declaration();
             }
         }else{          
-            error("Error: Expected 'int' or 'void' at the beginning of a declaration", getCurrent());
-            //synchronize("int", "void", "if", "while", "return", "{", ";");
+            error("Expected 'int' or 'void' at the beginning of a declaration", getCurrent());
         }
     }
 
     /*
      * 文法4
      */
-    private void var_declaration() {
+    private void var_declaration() throws ParserException{
         System.out.println("var_declaration");
         type_specifier();
         //对终结符进行匹配消耗
@@ -281,7 +254,7 @@ public class SyntaxParser {
     /*
      * 文法5
      */
-    private void type_specifier(){
+    private void type_specifier()throws ParserException{
         System.out.println("type_specifier");
         Token INTtoken = new Token("KEYWORD","int");
         Token VOIDtoken = new Token("KEYWORD","void");
@@ -292,7 +265,7 @@ public class SyntaxParser {
             consume(VOIDtoken);
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error("Error: Expected 'int' or 'void'",getCurrent());
+            error("Expected 'int' or 'void'",getCurrent());
             advance();
         }
     }
@@ -306,7 +279,7 @@ public class SyntaxParser {
     /*
      * 文法6
      */
-    private void fun_declaration() {
+    private void fun_declaration()throws ParserException {
         System.out.println("fun_declaration");
         type_specifier();
         consume(new Token("ID","null"));
@@ -315,14 +288,11 @@ public class SyntaxParser {
         consume(new Token("SEPARATOR",")"));
         compound_stmt();
     }
-
-    
-
     
     /*
      * 文法7
      */
-    private void params(){
+    private void params()throws ParserException{
         System.out.println("params");
         Token voidToken = new Token("KEYWORD","void");
         if(match(voidToken)){
@@ -335,7 +305,7 @@ public class SyntaxParser {
     /*
      * 文法8.1
      */
-    private void param_list(){
+    private void param_list()throws ParserException{
         System.out.println("param_list");
         param();
         param_list1();
@@ -344,7 +314,7 @@ public class SyntaxParser {
     /*
      * 文法8.2
      */
-    private void param_list1(){
+    private void param_list1()throws ParserException{
         System.out.println("param_list1");
         Token commaToken = new Token("SEPARATOR",",");
         while(match(commaToken)){
@@ -358,7 +328,7 @@ public class SyntaxParser {
     /*
      * 文法9
      */
-    private void param(){
+    private void param()throws ParserException{
         System.out.println("param");
         type_specifier();
 
@@ -375,7 +345,7 @@ public class SyntaxParser {
     /*
      * 文法10
      */
-    private void compound_stmt(){
+    private void compound_stmt()throws ParserException{
         System.out.println("compound_stmt");
         consume(new Token("SEPARATOR","{"));
         local_declarations();
@@ -387,7 +357,7 @@ public class SyntaxParser {
      * 文法11.1
      * 
      */
-    private void local_declarations(){
+    private void local_declarations()throws ParserException{
         System.out.println("local_declarations");
         local_declarations1();
     }
@@ -396,7 +366,7 @@ public class SyntaxParser {
      * 文法11.2
      * 
      */
-    private void local_declarations1(){
+    private void local_declarations1()throws ParserException{
         System.out.println("local_declarations1");
         while(isTypeSpecifier()){
             var_declaration();
@@ -408,7 +378,7 @@ public class SyntaxParser {
      * 文法12.1
      * 
      */
-    private void statement_list(){
+    private void statement_list()throws ParserException{
         System.out.println("statement_list");
         statement_list1();
     }
@@ -417,7 +387,7 @@ public class SyntaxParser {
      * 文法12.2
      * 
      */
-    private void statement_list1(){
+    private void statement_list1()throws ParserException{
         System.out.println("statement_list1");
         while(isStatement()){
             statement();
@@ -434,7 +404,7 @@ public class SyntaxParser {
      * 文法13
      * 为expression_stmt、compound_stmt、selection_stmt、iteration_stmt、return_stmt时进入statement
      */
-    private void statement() {
+    private void statement() throws ParserException{
         System.out.println("statement");
         if(!isAtEnd()){
             if(isExpressionStmt()){
@@ -482,7 +452,7 @@ public class SyntaxParser {
      * 文法14
      * 为expression或者;时进入expression_stmt
      */
-    private void expression_stmt() {
+    private void expression_stmt() throws ParserException{
         System.out.println("expression_stmt");
         if(isExpression()){
             expression();
@@ -501,7 +471,7 @@ public class SyntaxParser {
      * 文法15
      * 
      */
-    private void selection_stmt(){
+    private void selection_stmt()throws ParserException{
         System.out.println("selection_stmt");
         consume(new Token("KEYWORD","if"));
         consume(new Token("SEPARATOR","("));
@@ -518,7 +488,7 @@ public class SyntaxParser {
      * 文法16
      * 
      */
-    private void iteration_stmt(){
+    private void iteration_stmt()throws ParserException{
         System.out.println("iteration_stmt");
         consume(new Token("KEYWORD","while"));
         consume(new Token("SEPARATOR","("));
@@ -531,7 +501,7 @@ public class SyntaxParser {
      * 文法17
      * 
      */
-    private void return_stmt(){
+    private void return_stmt()throws ParserException{
         System.out.println("return_stmt");
         consume(new Token("KEYWORD","return"));
         if(!match(new Token("SEPARATOR",";"))){
@@ -545,7 +515,7 @@ public class SyntaxParser {
      * 为var或者simple_expression时进入expression
      * expression文法定义较为复杂
      */
-    private void expression(){
+    private void expression()throws ParserException{
         System.out.println("expression");
         // 先保存当前Token位置，方便回溯
         int savePos = current;
@@ -585,7 +555,7 @@ public class SyntaxParser {
      * 文法19
      * 为ID时进入var
      */
-    private void var() {
+    private void var() throws ParserException{
         System.out.println("var");
         consume(new Token("ID","null"));
         if(match(new Token("SEPARATOR","["))){
@@ -599,7 +569,7 @@ public class SyntaxParser {
      * 文法20
      * 第一个为term时进入simple_expression
      */
-    private void simple_expression() {
+    private void simple_expression() throws ParserException{
         System.out.println("simple_expression");
         additive_expression();
         if (isRelop()) {
@@ -618,13 +588,13 @@ public class SyntaxParser {
      * 文法21
      * 
      */
-    private void relop() {
+    private void relop() throws ParserException{
         System.out.println("relop");
         if(isRelop()){
             advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error("Error: Expected relop e.g. <= < >= > ...",getCurrent());
+            error("Expected relop e.g. <= < >= > ... here",getCurrent());
             advance();
         }
     }
@@ -633,7 +603,7 @@ public class SyntaxParser {
      * 文法22.1
      * 
      */
-    private void additive_expression() {
+    private void additive_expression() throws ParserException{
         System.out.println("additive_expression");
         term();
         additive_expression1();
@@ -643,7 +613,7 @@ public class SyntaxParser {
      * 文法22.2
      * 
      */
-    private void additive_expression1() {
+    private void additive_expression1()throws ParserException {
         System.out.println("additive_expression1");
         while(isAddop()){
             addop();
@@ -661,13 +631,13 @@ public class SyntaxParser {
      * 文法23
      * 
      */
-    private void addop(){
+    private void addop()throws ParserException{
         System.out.println("addop");
         if(isAddop()){
             advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error("Error: Expected '+' or '-'",getCurrent());
+            error("Expected '+' or '-' here",getCurrent());
             advance();
         }
     }
@@ -676,7 +646,7 @@ public class SyntaxParser {
      * 文法24.1
      * 为factor时进入term
      */
-    private void term() {
+    private void term() throws ParserException{
         System.out.println("term");
         factor();
         term1();
@@ -686,7 +656,7 @@ public class SyntaxParser {
      * 文法24.2
      * 
      */
-    private void term1() {
+    private void term1() throws ParserException{
         System.out.println("term1");
         while(isMulop()){
             mulop();
@@ -702,13 +672,13 @@ public class SyntaxParser {
     /* 
      * 文法25
      */
-    private void mulop(){
+    private void mulop()throws ParserException{
         System.out.println("mulop");
        if(isMulop()){
             advance();
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-            error("Error: Expected '*' or '/'",getCurrent());
+            error("Expected '*' or '/' here ",getCurrent());
             advance();
         }
     }
@@ -717,7 +687,7 @@ public class SyntaxParser {
      * 文法26
      * 为( ID  NUM时进入factor 
      */
-    private void factor() {
+    private void factor() throws ParserException{
         System.out.println("factor");
         Token leftBracket = new Token("SEPARATOR", "(");
         Token ID = new Token("ID", "null");
@@ -739,9 +709,7 @@ public class SyntaxParser {
                 consume(NUM);
             } else {
                 // 如果都不匹配，则说明当前是错误的token,提示错误并向前移动
-                error("Error: Expected '(expression)', ID, call func or NUM as a factor",getCurrent());
-                //todo: 寻找可能的factor位置
-                //synchronize("(", TokenType.ID.toString(), TokenType.NUM.toString());
+                error("Expected '(expression)', ID, call func or NUM as a factor here",getCurrent());
                 advance();
             }
         }else{
@@ -754,7 +722,7 @@ public class SyntaxParser {
      * 文法27
      * 
      */
-    private void call() {
+    private void call() throws ParserException{
         System.out.println("call");
         consume(new Token("ID","null"));
         consume(new Token("SEPARATOR","("));
@@ -766,7 +734,7 @@ public class SyntaxParser {
      * 文法28
      * 
      */
-    private void args() {
+    private void args() throws ParserException{
         System.out.println("args");
         if(isExpression()){
             args_list();
@@ -778,7 +746,7 @@ public class SyntaxParser {
      * 文法29.1
      * 
      */
-    private void args_list() {
+    private void args_list() throws ParserException{
         System.out.println("args_list");
         expression();
         args_list1();
@@ -788,7 +756,7 @@ public class SyntaxParser {
      * 文法29.2
      * 
      */
-    private void args_list1() {
+    private void args_list1() throws ParserException{
         System.out.println("args_list1");
         Token comma = new Token("SEPARATOR", ",");
         while (match(comma)) {

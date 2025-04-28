@@ -3,6 +3,7 @@ import java.util.LinkedList;
 
 import Lexical.LexicalAnalyzer;
 import Lexical.Token;
+import Syntax.ParserException;
 import Syntax.SyntaxParser;
 
 public class Main {
@@ -18,13 +19,17 @@ public class Main {
         }
 
         SyntaxParser parser = new SyntaxParser(analyzer.getTokens(), ASTOutputFile);
-        parser.parse();
+        
+        try {
+            parser.parse();
+        } catch (ParserException e) {
+            e.printStackTrace();
+        }
         
         /*
          * 存在的bug：
          * 声明语句必须在每段的开头（不知道是定义还是bug）
          */
-
 
     }
 }
