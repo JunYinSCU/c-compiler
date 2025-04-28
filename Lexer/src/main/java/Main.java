@@ -29,8 +29,7 @@ public class Main {
         
 
         ASTNode root =  parser.getRoot();
-        root.print();
-        //root.print("");
+        root.show();
 
         // int depth = TreePrinter1.getTreeDepth(root);
         // System.out.println("树的深度: " + depth);

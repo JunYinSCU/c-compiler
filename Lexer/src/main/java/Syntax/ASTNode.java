@@ -28,9 +28,9 @@ public  class ASTNode {
     private void printHelper(String indent, boolean isLast) {
         System.out.print(indent);
         if (isLast) {
-            System.out.print("`-- ");
+            System.out.print("└── ");
         } else {
-            System.out.print("|-- ");
+            System.out.print("├── ");
         }
         System.out.println(name);
 
@@ -47,7 +47,7 @@ public  class ASTNode {
         }
     }
 
-    public void print() {
+    public void show() {
         printHelper("", true);
     }
 
