@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class TreePrinter2 {
+public class TreePrinter {
     private static BufferedWriter output = null;
 
     public static void print(String outputFile,ASTNode root) {

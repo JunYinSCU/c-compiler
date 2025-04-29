@@ -3,8 +3,7 @@ import java.util.LinkedList;
 import Lexical.LexicalAnalyzer;
 import Lexical.Token;
 import Syntax.ASTNode;
-import Syntax.TreePrinter1;
-import Syntax.TreePrinter2;
+import Syntax.TreePrinter;
 import Syntax.ParserException;
 import Syntax.SyntaxParser;
 
@@ -31,12 +30,7 @@ public class Main {
         ASTNode root =  parser.getRoot();
         //root.show();
 
-
-        // int depth = TreePrinter1.getTreeDepth(root);
-        // System.out.println("树的深度: " + depth);
-
-        //TreePrinter1.show(root);
-        TreePrinter2.print(ASTOutputFile,root);
+        TreePrinter.print(ASTOutputFile,root);
         
         /*
          * 存在的bug：
