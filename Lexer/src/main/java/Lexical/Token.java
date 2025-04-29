@@ -2,8 +2,9 @@ package Lexical;
 
 public class Token {
 
-	private String value;
-	private String type;
+	private String value;	//token的值
+	private String type;	//token的类型
+	//token在源代码中的行号和列号
 	private int row;
 	private int column;
 

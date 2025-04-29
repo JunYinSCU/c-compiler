@@ -1,7 +1,5 @@
 package Syntax;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.util.LinkedList;
 import Lexical.Token;
 
@@ -11,6 +9,7 @@ public class SyntaxParser {
     private int current = 0;    // 当前token指针
     private ASTNode root;   // 语法树根节点
     boolean hasError = false; // 是否存在语法错误
+    private SymbolTableStack symbolTableStack = new SymbolTableStack(); //符号表列表，用于存储函数参数和局部变量
 
     public LinkedList<Token> getTokens() {
         return this.tokens;
@@ -124,6 +123,16 @@ public class SyntaxParser {
         return tokens.get(current + n);
     }
 
+    // 在解析函数时创建新的符号表作用域
+    private void enterScope() {
+        symbolTableStack.push();
+    }
+
+    // 离开当前作用域，销毁符号表
+    private void exitScope() {
+        symbolTableStack.pop();
+    }
+
     /*
      * consume方法只用于匹配终结符token，调用match方法进行匹配
      * 无论是否匹配成功，都会将指针向前移动一位
@@ -140,10 +149,17 @@ public class SyntaxParser {
     }
 
 
-    private void error(String expected, Token currentToken) throws ParserException {
-        String errorMessage = expected + "\n" +
+    private void error(String message, Token currentToken) throws ParserException {
+        hasError = true;
+        String errorMessage = message + "\n" +
                               "Current: " + currentToken.getValue() + " is not a valid token at line " +
                               currentToken.getRow() + ", column " + currentToken.getColum();
+        throw new ParserException(errorMessage);
+    }
+
+    private void error(String message) throws ParserException{
+        hasError = true;
+        String errorMessage = message + "row:" + previous().getRow() + ", column " + previous().getColum();
         throw new ParserException(errorMessage);
     }
 
@@ -151,7 +167,12 @@ public class SyntaxParser {
      * 主程序入口
      */
     public void parse() throws ParserException{
-        this.root = program();      
+        enterScope();   //进入新作用域
+
+        this.root = program();  //开始语法分析，获取根节点
+
+        exitScope();   //离开当前作用域 
+
         System.out.println("Syntax analysis completed. No syntax errors found.");
     }
 
@@ -160,6 +181,7 @@ public class SyntaxParser {
      */
     private ASTNode program() throws ParserException{
         System.out.println("program");
+
         //创建AST根节点
         ASTNode programNode = new ASTNode("Program");
 
@@ -180,6 +202,7 @@ public class SyntaxParser {
      */
     private ASTNode declaration_list() throws ParserException{
         System.out.println("declaration_list");
+
         ASTNode declarationListNode = new ASTNode("declaration-list");
 
         ASTNode declarationNode = declaration();
@@ -198,7 +221,9 @@ public class SyntaxParser {
     */
     private LinkedList<ASTNode> declaration_list1() throws ParserException{
         System.out.println("declaration_list1");
+
         LinkedList<ASTNode> declarations = new LinkedList<>();
+
         //var_declaration和fun_declaration类型定义实际都归结于type_specifier的int或者void
         while(isTypeSpecifier()) {
             declarations.add(declaration());
@@ -236,6 +261,7 @@ public class SyntaxParser {
      */
     private ASTNode var_declaration() throws ParserException{
         System.out.println("var_declaration");
+
         ASTNode varDeclarationNode = new ASTNode("var-declaration");
 
         ASTNode typeSpecifierNode = type_specifier();
@@ -243,6 +269,13 @@ public class SyntaxParser {
 
         //对终结符进行匹配消耗
         varDeclarationNode.addChild(consume(new Token("ID","null")));
+
+        //匹配ID后，当前token为ID，判断是否已经声明
+        String varName = previous().getValue();
+        if (symbolTableStack.containsInGlobalAndThis(varName)) {
+            error("Variable '" + varName + "' is already declared in this scope");
+        }
+        symbolTableStack.addSymbol(varName, "ID");
 
         if(match(new Token("SEPARATOR","["))){
             varDeclarationNode.addChild(consume(new Token("SEPARATOR","[")));
@@ -287,16 +320,34 @@ public class SyntaxParser {
      * 文法6
      */
     private ASTNode fun_declaration()throws ParserException {
-        System.out.println("fun_declaration");
+
         ASTNode funDeclarationNode = new ASTNode("fun-declaration");
+
+        enterScope();   // 进入函数作用域
 
         funDeclarationNode.addChild(type_specifier());
 
         funDeclarationNode.addChild(consume(new Token("ID","null")));
+
+        //匹配ID后，前一个token为函数名，检查符号表
+        String funName = previous().getValue();
+        if(symbolTableStack.containsInGlobal(funName)) {
+            error("Function '" + funName + "' is already declared in this scope");
+        }
+        //todo:参数个数n
+        symbolTableStack.addSymbolToGlobal(funName, "n");
+
+        SymbolTable globalTable = symbolTableStack.getGlobalTable();
+        System.out.println("globalTable:---------------");
+        globalTable.printAll();
+        System.out.println("funName: " + funName);
+
         funDeclarationNode.addChild(consume(new Token("SEPARATOR","(")));
         funDeclarationNode.addChild(params());
         funDeclarationNode.addChild(consume(new Token("SEPARATOR",")")));
         funDeclarationNode.addChild(compound_stmt());
+
+        exitScope();    // 离开函数作用域
 
         return funDeclarationNode;
     }
@@ -360,6 +411,13 @@ public class SyntaxParser {
 
         Token ID = new Token("ID","null");       
         paramNode.addChild(consume(ID));
+
+        //匹配ID后，当前token为ID，判断是否已经声明
+        String paramName = previous().getValue();
+        if (symbolTableStack.containsInGlobalAndThis(paramName)) {
+            error("Parameter '" + paramName + "' is already declared in this scope");
+        }
+        symbolTableStack.addSymbol(paramName, "ID");
 
         Token leftBracket = new Token("SEPARATOR","[");
         if(match(leftBracket)){
@@ -464,7 +522,9 @@ public class SyntaxParser {
             if(isExpressionStmt()){
                 statementNode.addChild(expression_stmt());
             }else if(isCompoundStmt()){
+                enterScope();// 进入块作用域
                 statementNode.addChild(compound_stmt());
+                exitScope(); // 离开块作用域
             }else if(isSelectionStmt()){
                 statementNode.addChild(selection_stmt());
             }else if(isIterationStmt()){
@@ -638,6 +698,12 @@ public class SyntaxParser {
         ASTNode varNode = new ASTNode("var");
 
         varNode.addChild(consume(new Token("ID","null")));
+
+        // 检查符号表，确保该变量已声明
+        String varName = previous().getValue();   
+        if (!symbolTableStack.containsInGlobalAndThis(varName)) {
+            error("Variable '" + varName + "' is used before being declared");
+        }
 
         if(match(new Token("SEPARATOR","["))){
             varNode.addChild(consume(new Token("SEPARATOR","[")));
@@ -860,6 +926,13 @@ public class SyntaxParser {
         ASTNode callNode = new ASTNode("call");
 
         callNode.addChild(consume(new Token("ID","null")));
+
+        //匹配ID后，前一个token为函数名，检查符号表
+        String funName = previous().getValue();
+        if(!symbolTableStack.containsInGlobalAndThis(funName)) {
+            error("Function '" + funName + "' is not declared in this scope");
+        }
+
         callNode.addChild(consume(new Token("SEPARATOR","(")));
         callNode.addChild(args());
         callNode.addChild(consume(new Token("SEPARATOR",")")));

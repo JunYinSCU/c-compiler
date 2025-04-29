@@ -8,6 +8,7 @@ import java.util.List;
 public class TreePrinter {
     private static BufferedWriter output = null;
 
+    // 打印语法树到指定文件
     public static void print(String outputFile,ASTNode root) {
         try {
             // 打开输出文件
@@ -26,7 +27,7 @@ public class TreePrinter {
             }
         }
     }
-
+    // 显式语法树到控制台
     public static void show(ASTNode root) {
         if (root == null) {
             return;
@@ -34,6 +35,7 @@ public class TreePrinter {
         showHelper(root, "", true);
     }
     
+    // 获取语法树的深度
     public static int getTreeDepth(ASTNode root) {
         if (root == null) return 0;
         int maxChildDepth = 0;
@@ -42,6 +44,7 @@ public class TreePrinter {
         }
         return 1 + maxChildDepth;
     }
+    
     
     private static void printHelper(ASTNode root, String indent, boolean isLast) {
         // 打印当前节点的名称

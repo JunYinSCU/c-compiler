@@ -21,6 +21,7 @@ public class LexicalAnalyzer {
 	private int commentRow = 0;		//用于记录注释开始行号
 	private int commentColumn = 0;		//用于记录注释开始列号
 
+	//获取分析得到的tokens列表
 	public LinkedList<Token> getTokens() {
 		return tokens;
 	}
@@ -88,6 +89,7 @@ public class LexicalAnalyzer {
 	private static final int STATE_IN_COMMENT = 25;			// 注释
 	private static final int STATE_COMMENT_END_STAR = 26;	// 注释结束
 
+
 	private void putCharToLexemeBuffer(char c) {  //将字符放入lexemeBuffer
 		lexemeBuffer.offerLast(c);
 	}
@@ -107,11 +109,13 @@ public class LexicalAnalyzer {
 		output.newLine();
 	}
 
-	public void start(){	//词法分析器的入口函数
+	//词法分析器的入口函数
+	public void start(){	
 		getText();
 	}
 
-	private void getText() {	//获取每一行进行分析
+	//获取每一行进行分析
+	private void getText() {	
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(inputFile));
@@ -138,6 +142,7 @@ public class LexicalAnalyzer {
 		}
 	}
 
+	//状态机分析
 	private void Analysis() throws IOException {
 		int state;	//用于判断当前状态
 
