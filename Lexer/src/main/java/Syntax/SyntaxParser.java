@@ -9,8 +9,6 @@ public class SyntaxParser {
     private LinkedList<Token> tokens;   //token列表
     private Token EOFToken = new Token("EOF", "$", -1, -1);     // 文件结束符
     private int current = 0;    // 当前token指针
-    private String outputFile = "SyntaxOutput.txt";     // 输出文件名
-    private BufferedWriter output;
     private ASTNode root;   // 语法树根节点
     boolean hasError = false; // 是否存在语法错误
 
@@ -22,23 +20,6 @@ public class SyntaxParser {
         return this.root;
     }
 
-    public SyntaxParser(LinkedList<Token> tokens, String outputFile) {
-        LinkedList<Token> filteredTokens = new LinkedList<>();
-        for (Token t : tokens) {    // 过滤掉注释token
-            if (!t.getType().equals("COMMENT")) {
-                filteredTokens.add(t);
-            }
-        }
-        this.tokens = filteredTokens;
-        this.tokens.addLast(EOFToken);  //添加文件结束符
-        this.outputFile = outputFile;
-        try {
-            output = new BufferedWriter(new FileWriter(this.outputFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public SyntaxParser(LinkedList<Token> tokens) {
         LinkedList<Token> filteredTokens = new LinkedList<>();
         for (Token t : tokens) {    // 过滤掉注释token
@@ -48,11 +29,6 @@ public class SyntaxParser {
         }
         this.tokens = filteredTokens;
         this.tokens.addLast(EOFToken); //添加文件结束符
-        try {
-            output = new BufferedWriter(new FileWriter(this.outputFile));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /*

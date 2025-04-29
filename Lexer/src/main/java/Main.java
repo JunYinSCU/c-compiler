@@ -22,20 +22,21 @@ public class Main {
         //     System.out.println(token);
         // }
 
-        SyntaxParser parser = new SyntaxParser(tokens, ASTOutputFile);
+        SyntaxParser parser = new SyntaxParser(tokens);
         
 
         parser.parse();
         
 
         ASTNode root =  parser.getRoot();
-        root.show();
+        //root.show();
+
 
         // int depth = TreePrinter1.getTreeDepth(root);
         // System.out.println("树的深度: " + depth);
 
         //TreePrinter1.show(root);
-        //TreePrinter2.print(root);
+        TreePrinter2.print(ASTOutputFile,root);
         
         /*
          * 存在的bug：

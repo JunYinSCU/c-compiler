@@ -25,7 +25,7 @@ public  class ASTNode {
         return name;
     }
 
-    private void printHelper(String indent, boolean isLast) {
+    private void showHelper(String indent, boolean isLast) {
         System.out.print(indent);
         if (isLast) {
             System.out.print("└── ");
@@ -43,12 +43,12 @@ public  class ASTNode {
             } else {
                 newIndent = indent + "|   ";
             }
-            child.printHelper(newIndent, i == childrenCount - 1);
+            child.showHelper(newIndent, i == childrenCount - 1);
         }
     }
 
     public void show() {
-        printHelper("", true);
+        showHelper("", true);
     }
 
  

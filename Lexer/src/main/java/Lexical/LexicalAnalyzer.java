@@ -14,8 +14,8 @@ public class LexicalAnalyzer {
 	private String currentLine;		//当前处理的行
 	private BufferedWriter output;	//输出
 	private StringBuilder commentBuffer = new StringBuilder();	//注释
-	private String inputFile = "input.txt";		//输入文件名，默认为input.txt
-	private String outputFile = "output.txt";	//输出文件名，默认为output.txt
+	private String inputFile = "source.txt";		//输入文件名，默认为source.txt
+	private String outputFile = "tokens.txt";	//输出文件名，默认为tokens.txt
 	private int row = 0;		//用于记录当前行号
 	private int column = 0;		//用于记录当前列号
 	private int commentRow = 0;		//用于记录注释开始行号
