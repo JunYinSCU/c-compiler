@@ -9,9 +9,9 @@ import Syntax.SyntaxParser;
 
 public class Main {
     public static void main(String[] args) throws ParserException {
-        String SourceInputFile = "Lexer/test2.txt";
-        String TokensOutputFile = "Lexer/test2_tokens.txt";
-        String ASTOutputFile = "Lexer/test2_AST.txt";
+        String SourceInputFile = "Lexer/test3.txt";
+        String TokensOutputFile = "Lexer/test3_tokens.txt";
+        String ASTOutputFile = "Lexer/test3_AST.txt";
 
         //构建词法分析器
         LexicalAnalyzer analyzer = new LexicalAnalyzer(SourceInputFile, TokensOutputFile);
@@ -32,10 +32,8 @@ public class Main {
         /*
          * 存在的bug：
          * 1. 声明语句必须在每段的开头（不知道是定义还是bug）
-         * 2. 无法判断ID在使用前是否声明
-         *   2.1 可以判断fun和单层的ID是否声明，但对于多层{}包围的ID无法判断
-         * 3. 局部声明和全局声明无法区分
-         * 4. input和output的定义不清楚
+         * 2. 函数定义与使用时参数个数匹配问题
+         * 3. input和output的定义不清楚
          */
 
     }

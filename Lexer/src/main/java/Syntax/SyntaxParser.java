@@ -140,7 +140,12 @@ public class SyntaxParser {
      */
     private ASTNode consume(Token expectedToken) throws ParserException {
         if (!match(expectedToken)) {
-            String errorMessage = "Expected "+ expectedToken.getValue()+" at here";
+            String errorMessage;
+            if(expectedToken.getValue().equals("null")){
+                errorMessage = "Expected token of type " + expectedToken.getType() + " at here";
+            }else{
+                errorMessage = "Expected "+ expectedToken.getValue()+" at here";
+            }         
             error(errorMessage,getCurrent());     
         }
         ASTNode node = new ASTNode(getCurrent().getValue());
@@ -272,7 +277,7 @@ public class SyntaxParser {
 
         //匹配ID后，当前token为ID，判断是否已经声明
         String varName = previous().getValue();
-        if (symbolTableStack.containsInGlobalAndThis(varName)) {
+        if (symbolTableStack.containsBellow(varName)) {
             error("Variable '" + varName + "' is already declared in this scope");
         }
         symbolTableStack.addSymbol(varName, "ID");
@@ -414,7 +419,7 @@ public class SyntaxParser {
 
         //匹配ID后，当前token为ID，判断是否已经声明
         String paramName = previous().getValue();
-        if (symbolTableStack.containsInGlobalAndThis(paramName)) {
+        if (symbolTableStack.containsBellow(paramName)) {
             error("Parameter '" + paramName + "' is already declared in this scope");
         }
         symbolTableStack.addSymbol(paramName, "ID");
@@ -701,7 +706,7 @@ public class SyntaxParser {
 
         // 检查符号表，确保该变量已声明
         String varName = previous().getValue();   
-        if (!symbolTableStack.containsInGlobalAndThis(varName)) {
+        if (!symbolTableStack.containsBellow(varName)) {
             error("Variable '" + varName + "' is used before being declared");
         }
 

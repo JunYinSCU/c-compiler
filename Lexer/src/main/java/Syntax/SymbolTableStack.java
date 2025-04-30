@@ -10,7 +10,7 @@ class SymbolTableStack {
 
     public SymbolTableStack() {
         stack = new LinkedList<>();
-        currentLevel = 0;
+        currentLevel = -1;
     }
 
     // 推入新的符号表（例如函数开始时）
@@ -48,19 +48,26 @@ class SymbolTableStack {
     }
 
     // 检查当前符号表是否包含某符号
-    public boolean containsAtThis(String name) {
+    public boolean containsInThis(String name) {
         return stack.peek().contains(name);
     }
 
     // 查找当前符号表及其以下的符号表中是否有符号
-    public boolean containsInBellow(String name) {
+    public boolean containsBellow(String name) {
+        //先检查全局变量表中是否有符号
+        if(containsInGlobal(name)){
+            return true;
+        }
+        //再依次检查当前符号表及其以下的符号表中是否有符号
         for (int i = currentLevel; i >= 0; i--) {
             if (stack.get(i).contains(name)) {
                 return true;
             }        
         }
+
         return false;
     }
+
     // 查找全局符号表中是否有符号
     public boolean containsInGlobal(String name) {
         return getGlobalTable().contains(name);
@@ -68,6 +75,6 @@ class SymbolTableStack {
 
     // 查找全局符号表及当前符号表中是否有符号
     public boolean containsInGlobalAndThis(String name) {
-        return containsInGlobal(name) || containsAtThis(name);
+        return containsInGlobal(name) || containsInThis(name);
     }
 }
