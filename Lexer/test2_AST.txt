@@ -935,44 +935,34 @@
                     |   |               |               └── factor
                     |   |               |                   └── 0
                     |   |               └── ;
-                    |   ├── statement
-                    |   |   └── selection-stmt
-                    |   |       ├── if
-                    |   |       ├── (
-                    |   |       ├── expression
-                    |   |       |   ├── var
-                    |   |       |   |   └── x
-                    |   |       |   └── simple-expression
-                    |   |       |       ├── additive-expression
-                    |   |       |       |   └── term
-                    |   |       |       |       └── factor
-                    |   |       |       |           └── var
-                    |   |       |       |               └── x
-                    |   |       |       ├── relop
-                    |   |       |       |   └── !=
-                    |   |       |       └── additive-expression
-                    |   |       |           └── term
-                    |   |       |               └── factor
-                    |   |       |                   └── 10
-                    |   |       ├── )
-                    |   |       └── statement
-                    |   |           └── return-stmt
-                    |   |               ├── return
-                    |   |               ├── expression
-                    |   |               |   └── simple-expression
-                    |   |               |       └── additive-expression
-                    |   |               |           └── term
-                    |   |               |               └── factor
-                    |   |               |                   └── 0
-                    |   |               └── ;
                     |   └── statement
-                    |       └── return-stmt
-                    |           ├── return
+                    |       └── selection-stmt
+                    |           ├── if
+                    |           ├── (
                     |           ├── expression
+                    |           |   ├── var
+                    |           |   |   └── x
                     |           |   └── simple-expression
+                    |           |       ├── additive-expression
+                    |           |       |   └── term
+                    |           |       |       └── factor
+                    |           |       |           └── var
+                    |           |       |               └── x
+                    |           |       ├── relop
+                    |           |       |   └── !=
                     |           |       └── additive-expression
                     |           |           └── term
                     |           |               └── factor
-                    |           |                   └── 0
-                    |           └── ;
+                    |           |                   └── 10
+                    |           ├── )
+                    |           └── statement
+                    |               └── return-stmt
+                    |                   ├── return
+                    |                   ├── expression
+                    |                   |   └── simple-expression
+                    |                   |       └── additive-expression
+                    |                   |           └── term
+                    |                   |               └── factor
+                    |                   |                   └── 0
+                    |                   └── ;
                     └── }

@@ -32,24 +32,32 @@ class SymbolTableStack {
         return globalTable;
     }
 
+    public SymbolTable getCurrentTable(){
+        return stack.peek();
+    }
+
     // 向当前符号表添加符号
-    public void addSymbol(String name, String type) {
-        stack.peek().addSymbol(name, type);
+    public void addSymbol(String name, SymbolEntry entry) {
+        getCurrentTable().addSymbol(name, entry);
     }
 
     //向全局符号表添加符号
-    public void addSymbolToGlobal(String name, String type) {
-        getGlobalTable().addSymbol(name, type);
+    public void addSymbolToGlobal(String name, SymbolEntry entry) {
+        getGlobalTable().addSymbol(name, entry);
     }
 
     // 查找当前符号表中是否有符号
-    public String lookupAtThis(String name) {
-        return stack.peek().lookup(name);
+    public SymbolEntry lookupAtThis(String name) {
+        return getCurrentTable().lookup(name);
+    }
+
+    public SymbolEntry lookupAtGlobal(String name) {
+        return getGlobalTable().lookup(name);
     }
 
     // 检查当前符号表是否包含某符号
     public boolean containsInThis(String name) {
-        return stack.peek().contains(name);
+        return getCurrentTable().contains(name);
     }
 
     // 查找当前符号表及其以下的符号表中是否有符号

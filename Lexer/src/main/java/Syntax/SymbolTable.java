@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 class SymbolTable {
-    private Map<String, String> table = new HashMap<>();
+    private Map<String, SymbolEntry> table = new HashMap<>();
 
     // 添加符号
-    public void addSymbol(String name, String note) {
-        table.put(name, note);
+    public void addSymbol(String name, SymbolEntry entry) {
+        table.put(name, entry);
     }
 
     // 查找符号
-    public String lookup(String name) {
+    public SymbolEntry lookup(String name) {
         return table.get(name);
     }
 
@@ -22,8 +22,11 @@ class SymbolTable {
     }
 
     public void printAll(){
-        for (Map.Entry<String, String> entry : table.entrySet()) {
-            System.out.println("Name: " + entry.getKey() + ", Note: " + entry.getValue());
+        for (Map.Entry<String, SymbolEntry> entry : table.entrySet()) {
+            String name = entry.getKey();
+            SymbolEntry symbolEntry = entry.getValue();
+            System.out.println("Name: " + name + ", Type: " + symbolEntry.getType() +
+                    (symbolEntry.isFunction() ? ", ParamCount: " + symbolEntry.getParamCount() : ""));
         }
     }
 }

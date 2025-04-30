@@ -1,6 +1,8 @@
 package Syntax;
 
 import java.util.LinkedList;
+import java.util.List;
+
 import Lexical.Token;
 
 public class SyntaxParser {
@@ -275,12 +277,19 @@ public class SyntaxParser {
         //对终结符进行匹配消耗
         varDeclarationNode.addChild(consume(new Token("ID","null")));
 
-        //匹配ID后，当前token为ID，判断是否已经声明
+        //匹配ID后，当前token前一个为ID，判断是否已经声明
         String varName = previous().getValue();
-        if (symbolTableStack.containsBellow(varName)) {
+        if (symbolTableStack.containsBellow(varName)) { 
             error("Variable '" + varName + "' is already declared in this scope");
         }
-        symbolTableStack.addSymbol(varName, "ID");
+
+        /*---------统一处理：向符号表中添加变量的相关信息------------------- */
+        //如果没有声明，则添加到符号表
+        List<ASTNode> child = typeSpecifierNode.getChildren();
+        String type = child.get(0).getName(); //获取类型
+        SymbolEntry entry = new SymbolEntry(varName, type);
+        symbolTableStack.addSymbol(varName, entry);
+        /*---------------------------------------------------------- */
 
         if(match(new Token("SEPARATOR","["))){
             varDeclarationNode.addChild(consume(new Token("SEPARATOR","[")));
@@ -330,7 +339,8 @@ public class SyntaxParser {
 
         enterScope();   // 进入函数作用域
 
-        funDeclarationNode.addChild(type_specifier());
+        ASTNode typeSpecifierNode = type_specifier();
+        funDeclarationNode.addChild(typeSpecifierNode);
 
         funDeclarationNode.addChild(consume(new Token("ID","null")));
 
@@ -339,18 +349,29 @@ public class SyntaxParser {
         if(symbolTableStack.containsInGlobal(funName)) {
             error("Function '" + funName + "' is already declared in this scope");
         }
-        //todo:参数个数n
-        symbolTableStack.addSymbolToGlobal(funName, "n");
-
-        SymbolTable globalTable = symbolTableStack.getGlobalTable();
-        System.out.println("globalTable:---------------");
-        globalTable.printAll();
-        System.out.println("funName: " + funName);
-
+        
         funDeclarationNode.addChild(consume(new Token("SEPARATOR","(")));
-        funDeclarationNode.addChild(params());
+        ASTNode paramsNode = params();  //获得参数列表
+        funDeclarationNode.addChild(paramsNode);
         funDeclarationNode.addChild(consume(new Token("SEPARATOR",")")));
         funDeclarationNode.addChild(compound_stmt());
+
+        /*---------统一处理：向符号表中添加函数的相关信息-------------- */
+        //todo:参数个数n
+        List<ASTNode> type = typeSpecifierNode.getChildren();
+        List<ASTNode> paramList = paramsNode.getChildren();
+        String funcType = type.get(0).getName(); //获取类型
+        String name = paramList.get(0).getName(); //获取参数列表第一个子节点的名字
+        int paramCount = 0; //参数个数，默认为0
+        if(name.equals("void")){    //如果第一个子节点的名字为void，则说明没有参数
+            paramCount = 0;
+        }else{  //否则就是param-list，这个节点的长度就是param , param ....的个数，以此计算参数个数
+            ASTNode paramListNode = paramList.get(0); //此时paramListNode为param-list
+            paramCount = paramListNode.getChildren().size() / 2 + 1;
+        }
+        SymbolEntry entry = new SymbolEntry(funName, funcType, paramCount);
+        symbolTableStack.addSymbolToGlobal(funName, entry);
+        /*---------------------------------------------------------- */
 
         exitScope();    // 离开函数作用域
 
@@ -412,7 +433,8 @@ public class SyntaxParser {
         System.out.println("param");
         ASTNode paramNode = new ASTNode("param");
 
-        paramNode.addChild(type_specifier());
+        ASTNode typeSpecifierNode = type_specifier();
+        paramNode.addChild(typeSpecifierNode);
 
         Token ID = new Token("ID","null");       
         paramNode.addChild(consume(ID));
@@ -422,7 +444,10 @@ public class SyntaxParser {
         if (symbolTableStack.containsBellow(paramName)) {
             error("Parameter '" + paramName + "' is already declared in this scope");
         }
-        symbolTableStack.addSymbol(paramName, "ID");
+        List<ASTNode> child = typeSpecifierNode.getChildren();
+        String type = child.get(0).getName(); //获取类型
+        SymbolEntry entry = new SymbolEntry(paramName, type);
+        symbolTableStack.addSymbol(paramName, entry);
 
         Token leftBracket = new Token("SEPARATOR","[");
         if(match(leftBracket)){
@@ -939,8 +964,22 @@ public class SyntaxParser {
         }
 
         callNode.addChild(consume(new Token("SEPARATOR","(")));
-        callNode.addChild(args());
+        ASTNode argsNode = args();
+        callNode.addChild(argsNode);
         callNode.addChild(consume(new Token("SEPARATOR",")")));
+
+        /*-----------统一处理：判断参数个数是否是匹配定义-------------- */
+        int paramCount = 0; //当前函数参数个数
+        if(argsNode.getChildren().size() > 0){
+            ASTNode argsListNode = argsNode.getChildren().get(0); //args-list
+            paramCount = argsListNode.getChildren().size() / 2 + 1; //参数个数
+        }
+        SymbolEntry entry = symbolTableStack.lookupAtGlobal(funName);
+        
+        if(entry.getParamCount() != paramCount) {
+            error("Function '" + funName + "' need " + entry.getParamCount() + " params, but it  got " + paramCount + " arguments");
+        }
+        /*---------------------------------------------------------- */
 
         return callNode;
     }
