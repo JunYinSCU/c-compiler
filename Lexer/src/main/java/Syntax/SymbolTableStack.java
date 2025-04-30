@@ -28,10 +28,12 @@ class SymbolTableStack {
         
     }
 
+    //获得全局符号表
     public SymbolTable getGlobalTable(){
         return globalTable;
     }
 
+    //获取当前符号表
     public SymbolTable getCurrentTable(){
         return stack.peek();
     }

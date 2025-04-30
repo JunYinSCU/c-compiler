@@ -2,7 +2,6 @@ package Syntax;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import Lexical.Token;
 
 public class SyntaxParser {
@@ -12,6 +11,10 @@ public class SyntaxParser {
     private ASTNode root;   // 语法树根节点
     boolean hasError = false; // 是否存在语法错误
     private SymbolTableStack symbolTableStack = new SymbolTableStack(); //符号表列表，用于存储函数参数和局部变量
+    private String lastFuncType;    // 记录上一次函数的返回值类型
+    private boolean hasFunc = false;
+    private String lastReturnType;  //记录上一次return语句返回类型
+    private boolean hasReturn = false;
 
     public LinkedList<Token> getTokens() {
         return this.tokens;
@@ -181,6 +184,7 @@ public class SyntaxParser {
         exitScope();   //离开当前作用域 
 
         System.out.println("Syntax analysis completed. No syntax errors found.");
+        
     }
 
     /*
@@ -283,13 +287,13 @@ public class SyntaxParser {
             error("Variable '" + varName + "' is already declared in this scope");
         }
 
-        /*---------统一处理：向符号表中添加变量的相关信息------------------- */
+        /*-----------------统一处理：向符号表中添加变量的相关信息--------------------- */
         //如果没有声明，则添加到符号表
         List<ASTNode> child = typeSpecifierNode.getChildren();
         String type = child.get(0).getName(); //获取类型
         SymbolEntry entry = new SymbolEntry(varName, type);
         symbolTableStack.addSymbol(varName, entry);
-        /*---------------------------------------------------------- */
+        /*-------------------------------------------------------------------- */
 
         if(match(new Token("SEPARATOR","["))){
             varDeclarationNode.addChild(consume(new Token("SEPARATOR","[")));
@@ -342,25 +346,30 @@ public class SyntaxParser {
         ASTNode typeSpecifierNode = type_specifier();
         funDeclarationNode.addChild(typeSpecifierNode);
 
+        /*--------------------记录有关函数信息：函数返回值类型----------------------- */
+        List<ASTNode> type = typeSpecifierNode.getChildren();
+        lastFuncType = type.get(0).getName(); //获取类型
+        //此部分必须在compound-stmt之前，因为return-stmt在compound-stmt中，需要提前获取返回值类型
+        /*--------------------------------------------------------------------- */
+
         funDeclarationNode.addChild(consume(new Token("ID","null")));
 
         //匹配ID后，前一个token为函数名，检查符号表
-        String funName = previous().getValue();
-        if(symbolTableStack.containsInGlobal(funName)) {
-            error("Function '" + funName + "' is already declared in this scope");
+        String funcName = previous().getValue();
+        hasFunc = true;
+        if(symbolTableStack.containsInGlobal(funcName)) {
+            error("Function '" + funcName + "' is already declared in this scope");
         }
         
         funDeclarationNode.addChild(consume(new Token("SEPARATOR","(")));
         ASTNode paramsNode = params();  //获得参数列表
         funDeclarationNode.addChild(paramsNode);
-        funDeclarationNode.addChild(consume(new Token("SEPARATOR",")")));
+        funDeclarationNode.addChild(consume(new Token("SEPARATOR",")"))); 
         funDeclarationNode.addChild(compound_stmt());
 
-        /*---------统一处理：向符号表中添加函数的相关信息-------------- */
-        //todo:参数个数n
-        List<ASTNode> type = typeSpecifierNode.getChildren();
+        /*---------统一处理：向符号表中添加函数的相关信息-------------- */  
         List<ASTNode> paramList = paramsNode.getChildren();
-        String funcType = type.get(0).getName(); //获取类型
+        
         String name = paramList.get(0).getName(); //获取参数列表第一个子节点的名字
         int paramCount = 0; //参数个数，默认为0
         if(name.equals("void")){    //如果第一个子节点的名字为void，则说明没有参数
@@ -369,10 +378,22 @@ public class SyntaxParser {
             ASTNode paramListNode = paramList.get(0); //此时paramListNode为param-list
             paramCount = paramListNode.getChildren().size() / 2 + 1;
         }
-        SymbolEntry entry = new SymbolEntry(funName, funcType, paramCount);
-        symbolTableStack.addSymbolToGlobal(funName, entry);
+        SymbolEntry entry = new SymbolEntry(funcName, lastFuncType, paramCount);
+        symbolTableStack.addSymbolToGlobal(funcName, entry);
         /*---------------------------------------------------------- */
 
+
+        /*-------------在函数处理结束不服，判断是否存在没有返回语句的情况 -------------------*/
+        if(hasFunc && hasReturn){
+            hasFunc = false;
+            hasReturn = false;
+        }else if(hasFunc && !hasReturn){
+            System.out.println(lastFuncType);
+            if(lastFuncType.equals("int"))
+            error("Function '" + funcName + "' expect " +lastFuncType+ " return type, but has no return statement. ");
+        }
+        /*--------------------------------------------------------------------------- */
+ 
         exitScope();    // 离开函数作用域
 
         return funDeclarationNode;
@@ -666,11 +687,30 @@ public class SyntaxParser {
         ASTNode returnStmtNode = new ASTNode("return-stmt");
 
         returnStmtNode.addChild(consume(new Token("KEYWORD","return")));
+
         if(!match(new Token("SEPARATOR",";"))){
             returnStmtNode.addChild(expression());
+            returnStmtNode.addChild(consume(new Token("SEPARATOR",";")));
+            lastReturnType = "int"; //返回值类型
+        }else{
+            returnStmtNode.addChild(consume(new Token("SEPARATOR",";")));       
+            lastReturnType = "void"; //返回值类型
         }
-        returnStmtNode.addChild(consume(new Token("SEPARATOR",";")));
 
+        /*------------------进行实际返回值类型和函数定义的返回值类型的比较-------------------- */
+        hasReturn = true; //标记函数有返回值
+        
+        if(hasFunc && hasReturn){
+
+            if(!lastReturnType.equals(lastFuncType)){
+                error("Function expect " + lastFuncType + " return type, but has " + lastReturnType + " return type. ");
+            }
+        }
+        //这里不对hasReturn进行重置
+        //因为可能存在单个函数多次return语句的情况，要逐个比较每个return语句
+        //在函数结束时进行hasReturn的重置（在fun_declaration函数中）
+        /*----------------------------------------------------------------------------- */
+        
         return returnStmtNode;
     }
 

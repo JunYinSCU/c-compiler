@@ -85,7 +85,4 @@
 < NUM , 5 , (row=20 , column=13) >
 < SEPARATOR , ) , (row=20 , column=14) >
 < SEPARATOR , ; , (row=20 , column=15) >
-< KEYWORD , return , (row=21 , column=2) >
-< ID , a , (row=21 , column=9) >
-< SEPARATOR , ; , (row=21 , column=10) >
-< SEPARATOR , } , (row=22 , column=0) >
+< SEPARATOR , } , (row=21 , column=0) >

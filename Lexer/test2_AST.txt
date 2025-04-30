@@ -42,101 +42,97 @@
         |           |   |       |                   └── factor
         |           |   |       |                       └── 0
         |           |   |       └── ;
-        |           |   ├── statement
-        |           |   |   └── iteration-stmt
-        |           |   |       ├── while
-        |           |   |       ├── (
-        |           |   |       ├── expression
-        |           |   |       |   ├── var
-        |           |   |       |   |   └── i
-        |           |   |       |   └── simple-expression
-        |           |   |       |       ├── additive-expression
-        |           |   |       |       |   └── term
-        |           |   |       |       |       └── factor
-        |           |   |       |       |           └── var
-        |           |   |       |       |               └── i
-        |           |   |       |       ├── relop
-        |           |   |       |       |   └── <
-        |           |   |       |       └── additive-expression
-        |           |   |       |           └── term
-        |           |   |       |               └── factor
-        |           |   |       |                   └── var
-        |           |   |       |                       └── size
-        |           |   |       ├── )
-        |           |   |       └── statement
-        |           |   |           └── compound-stmt
-        |           |   |               ├── {
-        |           |   |               ├── local-declarations
-        |           |   |               |   └── var-declaration
-        |           |   |               |       ├── type-specifier
-        |           |   |               |       |   └── int
-        |           |   |               |       ├── temp
-        |           |   |               |       └── ;
-        |           |   |               ├── statement-list
-        |           |   |               |   ├── statement
-        |           |   |               |   |   └── expression-stmt
-        |           |   |               |   |       ├── expression
-        |           |   |               |   |       |   ├── var
-        |           |   |               |   |       |   |   └── temp
-        |           |   |               |   |       |   ├── =
-        |           |   |               |   |       |   └── expression
-        |           |   |               |   |       |       ├── var
-        |           |   |               |   |       |       |   ├── arr
-        |           |   |               |   |       |       |   ├── [
-        |           |   |               |   |       |       |   ├── expression
-        |           |   |               |   |       |       |   |   ├── var
-        |           |   |               |   |       |       |   |   |   └── i
-        |           |   |               |   |       |       |   |   └── simple-expression
-        |           |   |               |   |       |       |   |       └── additive-expression
-        |           |   |               |   |       |       |   |           └── term
-        |           |   |               |   |       |       |   |               └── factor
-        |           |   |               |   |       |       |   |                   └── var
-        |           |   |               |   |       |       |   |                       └── i
-        |           |   |               |   |       |       |   └── ]
-        |           |   |               |   |       |       └── simple-expression
-        |           |   |               |   |       |           └── additive-expression
-        |           |   |               |   |       |               └── term
-        |           |   |               |   |       |                   └── factor
-        |           |   |               |   |       |                       └── var
-        |           |   |               |   |       |                           ├── arr
-        |           |   |               |   |       |                           ├── [
-        |           |   |               |   |       |                           ├── expression
-        |           |   |               |   |       |                           |   ├── var
-        |           |   |               |   |       |                           |   |   └── i
-        |           |   |               |   |       |                           |   └── simple-expression
-        |           |   |               |   |       |                           |       └── additive-expression
-        |           |   |               |   |       |                           |           └── term
-        |           |   |               |   |       |                           |               └── factor
-        |           |   |               |   |       |                           |                   └── var
-        |           |   |               |   |       |                           |                       └── i
-        |           |   |               |   |       |                           └── ]
-        |           |   |               |   |       └── ;
-        |           |   |               |   └── statement
-        |           |   |               |       └── expression-stmt
-        |           |   |               |           ├── expression
-        |           |   |               |           |   ├── var
-        |           |   |               |           |   |   └── i
-        |           |   |               |           |   ├── =
-        |           |   |               |           |   └── expression
-        |           |   |               |           |       ├── var
-        |           |   |               |           |       |   └── i
-        |           |   |               |           |       └── simple-expression
-        |           |   |               |           |           └── additive-expression
-        |           |   |               |           |               ├── term
-        |           |   |               |           |               |   └── factor
-        |           |   |               |           |               |       └── var
-        |           |   |               |           |               |           └── i
-        |           |   |               |           |               ├── addop
-        |           |   |               |           |               |   └── +
-        |           |   |               |           |               └── term
-        |           |   |               |           |                   └── factor
-        |           |   |               |           |                       └── 1
-        |           |   |               |           └── ;
-        |           |   |               └── }
         |           |   └── statement
-        |           |       └── return-stmt
-        |           |           ├── return
-        |           |           └── ;
+        |           |       └── iteration-stmt
+        |           |           ├── while
+        |           |           ├── (
+        |           |           ├── expression
+        |           |           |   ├── var
+        |           |           |   |   └── i
+        |           |           |   └── simple-expression
+        |           |           |       ├── additive-expression
+        |           |           |       |   └── term
+        |           |           |       |       └── factor
+        |           |           |       |           └── var
+        |           |           |       |               └── i
+        |           |           |       ├── relop
+        |           |           |       |   └── <
+        |           |           |       └── additive-expression
+        |           |           |           └── term
+        |           |           |               └── factor
+        |           |           |                   └── var
+        |           |           |                       └── size
+        |           |           ├── )
+        |           |           └── statement
+        |           |               └── compound-stmt
+        |           |                   ├── {
+        |           |                   ├── local-declarations
+        |           |                   |   └── var-declaration
+        |           |                   |       ├── type-specifier
+        |           |                   |       |   └── int
+        |           |                   |       ├── temp
+        |           |                   |       └── ;
+        |           |                   ├── statement-list
+        |           |                   |   ├── statement
+        |           |                   |   |   └── expression-stmt
+        |           |                   |   |       ├── expression
+        |           |                   |   |       |   ├── var
+        |           |                   |   |       |   |   └── temp
+        |           |                   |   |       |   ├── =
+        |           |                   |   |       |   └── expression
+        |           |                   |   |       |       ├── var
+        |           |                   |   |       |       |   ├── arr
+        |           |                   |   |       |       |   ├── [
+        |           |                   |   |       |       |   ├── expression
+        |           |                   |   |       |       |   |   ├── var
+        |           |                   |   |       |       |   |   |   └── i
+        |           |                   |   |       |       |   |   └── simple-expression
+        |           |                   |   |       |       |   |       └── additive-expression
+        |           |                   |   |       |       |   |           └── term
+        |           |                   |   |       |       |   |               └── factor
+        |           |                   |   |       |       |   |                   └── var
+        |           |                   |   |       |       |   |                       └── i
+        |           |                   |   |       |       |   └── ]
+        |           |                   |   |       |       └── simple-expression
+        |           |                   |   |       |           └── additive-expression
+        |           |                   |   |       |               └── term
+        |           |                   |   |       |                   └── factor
+        |           |                   |   |       |                       └── var
+        |           |                   |   |       |                           ├── arr
+        |           |                   |   |       |                           ├── [
+        |           |                   |   |       |                           ├── expression
+        |           |                   |   |       |                           |   ├── var
+        |           |                   |   |       |                           |   |   └── i
+        |           |                   |   |       |                           |   └── simple-expression
+        |           |                   |   |       |                           |       └── additive-expression
+        |           |                   |   |       |                           |           └── term
+        |           |                   |   |       |                           |               └── factor
+        |           |                   |   |       |                           |                   └── var
+        |           |                   |   |       |                           |                       └── i
+        |           |                   |   |       |                           └── ]
+        |           |                   |   |       └── ;
+        |           |                   |   └── statement
+        |           |                   |       └── expression-stmt
+        |           |                   |           ├── expression
+        |           |                   |           |   ├── var
+        |           |                   |           |   |   └── i
+        |           |                   |           |   ├── =
+        |           |                   |           |   └── expression
+        |           |                   |           |       ├── var
+        |           |                   |           |       |   └── i
+        |           |                   |           |       └── simple-expression
+        |           |                   |           |           └── additive-expression
+        |           |                   |           |               ├── term
+        |           |                   |           |               |   └── factor
+        |           |                   |           |               |       └── var
+        |           |                   |           |               |           └── i
+        |           |                   |           |               ├── addop
+        |           |                   |           |               |   └── +
+        |           |                   |           |               └── term
+        |           |                   |           |                   └── factor
+        |           |                   |           |                       └── 1
+        |           |                   |           └── ;
+        |           |                   └── }
         |           └── }
         ├── declaration
         |   └── fun-declaration
@@ -339,7 +335,7 @@
         |           |                   |           |       └── additive-expression
         |           |                   |           |           └── term
         |           |                   |           |               └── factor
-        |           |                   |           |                   └── 0
+        |           |                   |           |                   └── 1
         |           |                   |           └── ;
         |           |                   └── }
         |           └── }
@@ -364,7 +360,7 @@
         |           |           |       └── additive-expression
         |           |           |           └── term
         |           |           |               └── factor
-        |           |           |                   └── 10
+        |           |           |                   └── 1
         |           |           └── ;
         |           └── }
         ├── declaration
@@ -935,34 +931,44 @@
                     |   |               |               └── factor
                     |   |               |                   └── 0
                     |   |               └── ;
+                    |   ├── statement
+                    |   |   └── selection-stmt
+                    |   |       ├── if
+                    |   |       ├── (
+                    |   |       ├── expression
+                    |   |       |   ├── var
+                    |   |       |   |   └── x
+                    |   |       |   └── simple-expression
+                    |   |       |       ├── additive-expression
+                    |   |       |       |   └── term
+                    |   |       |       |       └── factor
+                    |   |       |       |           └── var
+                    |   |       |       |               └── x
+                    |   |       |       ├── relop
+                    |   |       |       |   └── !=
+                    |   |       |       └── additive-expression
+                    |   |       |           └── term
+                    |   |       |               └── factor
+                    |   |       |                   └── 10
+                    |   |       ├── )
+                    |   |       └── statement
+                    |   |           └── return-stmt
+                    |   |               ├── return
+                    |   |               ├── expression
+                    |   |               |   └── simple-expression
+                    |   |               |       └── additive-expression
+                    |   |               |           └── term
+                    |   |               |               └── factor
+                    |   |               |                   └── 0
+                    |   |               └── ;
                     |   └── statement
-                    |       └── selection-stmt
-                    |           ├── if
-                    |           ├── (
+                    |       └── return-stmt
+                    |           ├── return
                     |           ├── expression
-                    |           |   ├── var
-                    |           |   |   └── x
                     |           |   └── simple-expression
-                    |           |       ├── additive-expression
-                    |           |       |   └── term
-                    |           |       |       └── factor
-                    |           |       |           └── var
-                    |           |       |               └── x
-                    |           |       ├── relop
-                    |           |       |   └── !=
                     |           |       └── additive-expression
                     |           |           └── term
                     |           |               └── factor
-                    |           |                   └── 10
-                    |           ├── )
-                    |           └── statement
-                    |               └── return-stmt
-                    |                   ├── return
-                    |                   ├── expression
-                    |                   |   └── simple-expression
-                    |                   |       └── additive-expression
-                    |                   |           └── term
-                    |                   |               └── factor
-                    |                   |                   └── 0
-                    |                   └── ;
+                    |           |                   └── 1
+                    |           └── ;
                     └── }

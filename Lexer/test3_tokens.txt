@@ -21,4 +21,7 @@
 < OPERATOR , = , (row=6 , column=6) >
 < NUM , 5 , (row=6 , column=8) >
 < SEPARATOR , ; , (row=6 , column=9) >
-< SEPARATOR , } , (row=7 , column=0) >
+< KEYWORD , return , (row=7 , column=4) >
+< ID , y , (row=7 , column=11) >
+< SEPARATOR , ; , (row=7 , column=12) >
+< SEPARATOR , } , (row=8 , column=0) >

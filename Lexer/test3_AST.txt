@@ -45,17 +45,30 @@
                     |   |       |               └── factor
                     |   |       |                   └── 2
                     |   |       └── ;
+                    |   ├── statement
+                    |   |   └── expression-stmt
+                    |   |       ├── expression
+                    |   |       |   ├── var
+                    |   |       |   |   └── y
+                    |   |       |   ├── =
+                    |   |       |   └── expression
+                    |   |       |       └── simple-expression
+                    |   |       |           └── additive-expression
+                    |   |       |               └── term
+                    |   |       |                   └── factor
+                    |   |       |                       └── 5
+                    |   |       └── ;
                     |   └── statement
-                    |       └── expression-stmt
+                    |       └── return-stmt
+                    |           ├── return
                     |           ├── expression
                     |           |   ├── var
                     |           |   |   └── y
-                    |           |   ├── =
-                    |           |   └── expression
-                    |           |       └── simple-expression
-                    |           |           └── additive-expression
-                    |           |               └── term
-                    |           |                   └── factor
-                    |           |                       └── 5
+                    |           |   └── simple-expression
+                    |           |       └── additive-expression
+                    |           |           └── term
+                    |           |               └── factor
+                    |           |                   └── var
+                    |           |                       └── y
                     |           └── ;
                     └── }

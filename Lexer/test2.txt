@@ -6,7 +6,6 @@ void printArray(int arr[], int size) {
     temp = arr[i];
     i = i + 1;
   }
-  return;
 }
 
 int multiply(int a, int b) {
@@ -25,12 +24,12 @@ int compare(void) {
   if (val1 <= val2[0]) {
     return 1;
   } else {
-    return 0;
+    return 1;
   }
 }
 
 int getValue(void) {
-  return 10;
+  return 1;
 }
 
 int add(int a, int b) {
@@ -75,4 +74,5 @@ int main(void) {
   if (x == 10) return 0;
   if (x != 10) return 0;
 
+  return 1;
 }

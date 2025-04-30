@@ -214,50 +214,37 @@
                     |   |       |                           |                           └── 2
                     |   |       |                           └── )
                     |   |       └── ;
-                    |   ├── statement
-                    |   |   └── expression-stmt
-                    |   |       ├── expression
-                    |   |       |   ├── var
-                    |   |       |   |   └── a
-                    |   |       |   ├── =
-                    |   |       |   └── expression
-                    |   |       |       ├── var
-                    |   |       |       |   └── add
-                    |   |       |       └── simple-expression
-                    |   |       |           └── additive-expression
-                    |   |       |               └── term
-                    |   |       |                   └── factor
-                    |   |       |                       └── call
-                    |   |       |                           ├── add
-                    |   |       |                           ├── (
-                    |   |       |                           ├── args
-                    |   |       |                           |   └── args-list
-                    |   |       |                           |       ├── expression
-                    |   |       |                           |       |   └── simple-expression
-                    |   |       |                           |       |       └── additive-expression
-                    |   |       |                           |       |           └── term
-                    |   |       |                           |       |               └── factor
-                    |   |       |                           |       |                   └── 10
-                    |   |       |                           |       ├── ,
-                    |   |       |                           |       └── expression
-                    |   |       |                           |           └── simple-expression
-                    |   |       |                           |               └── additive-expression
-                    |   |       |                           |                   └── term
-                    |   |       |                           |                       └── factor
-                    |   |       |                           |                           └── 5
-                    |   |       |                           └── )
-                    |   |       └── ;
                     |   └── statement
-                    |       └── return-stmt
-                    |           ├── return
+                    |       └── expression-stmt
                     |           ├── expression
                     |           |   ├── var
                     |           |   |   └── a
-                    |           |   └── simple-expression
-                    |           |       └── additive-expression
-                    |           |           └── term
-                    |           |               └── factor
-                    |           |                   └── var
-                    |           |                       └── a
+                    |           |   ├── =
+                    |           |   └── expression
+                    |           |       ├── var
+                    |           |       |   └── add
+                    |           |       └── simple-expression
+                    |           |           └── additive-expression
+                    |           |               └── term
+                    |           |                   └── factor
+                    |           |                       └── call
+                    |           |                           ├── add
+                    |           |                           ├── (
+                    |           |                           ├── args
+                    |           |                           |   └── args-list
+                    |           |                           |       ├── expression
+                    |           |                           |       |   └── simple-expression
+                    |           |                           |       |       └── additive-expression
+                    |           |                           |       |           └── term
+                    |           |                           |       |               └── factor
+                    |           |                           |       |                   └── 10
+                    |           |                           |       ├── ,
+                    |           |                           |       └── expression
+                    |           |                           |           └── simple-expression
+                    |           |                           |               └── additive-expression
+                    |           |                           |                   └── term
+                    |           |                           |                       └── factor
+                    |           |                           |                           └── 5
+                    |           |                           └── )
                     |           └── ;
                     └── }
