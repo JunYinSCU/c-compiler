@@ -1,5 +1,7 @@
 int main(void){
     int localVar;
-    a[1] + 2;
-    y[0] = 5;
+    int a;
+    int y;
+    a + 2;
+    y = 5;
 }

@@ -12,39 +12,33 @@
                 └── compound-stmt
                     ├── {
                     ├── local-declarations
+                    |   ├── var-declaration
+                    |   |   ├── type-specifier
+                    |   |   |   └── int
+                    |   |   ├── localVar
+                    |   |   └── ;
+                    |   ├── var-declaration
+                    |   |   ├── type-specifier
+                    |   |   |   └── int
+                    |   |   ├── a
+                    |   |   └── ;
                     |   └── var-declaration
                     |       ├── type-specifier
                     |       |   └── int
-                    |       ├── localVar
+                    |       ├── y
                     |       └── ;
                     ├── statement-list
                     |   ├── statement
                     |   |   └── expression-stmt
                     |   |       ├── expression
                     |   |       |   ├── var
-                    |   |       |   |   ├── a
-                    |   |       |   |   ├── [
-                    |   |       |   |   ├── expression
-                    |   |       |   |   |   └── simple-expression
-                    |   |       |   |   |       └── additive-expression
-                    |   |       |   |   |           └── term
-                    |   |       |   |   |               └── factor
-                    |   |       |   |   |                   └── 1
-                    |   |       |   |   └── ]
+                    |   |       |   |   └── a
                     |   |       |   └── simple-expression
                     |   |       |       └── additive-expression
                     |   |       |           ├── term
                     |   |       |           |   └── factor
                     |   |       |           |       └── var
-                    |   |       |           |           ├── a
-                    |   |       |           |           ├── [
-                    |   |       |           |           ├── expression
-                    |   |       |           |           |   └── simple-expression
-                    |   |       |           |           |       └── additive-expression
-                    |   |       |           |           |           └── term
-                    |   |       |           |           |               └── factor
-                    |   |       |           |           |                   └── 1
-                    |   |       |           |           └── ]
+                    |   |       |           |           └── a
                     |   |       |           ├── addop
                     |   |       |           |   └── +
                     |   |       |           └── term
@@ -55,15 +49,7 @@
                     |       └── expression-stmt
                     |           ├── expression
                     |           |   ├── var
-                    |           |   |   ├── y
-                    |           |   |   ├── [
-                    |           |   |   ├── expression
-                    |           |   |   |   └── simple-expression
-                    |           |   |   |       └── additive-expression
-                    |           |   |   |           └── term
-                    |           |   |   |               └── factor
-                    |           |   |   |                   └── 0
-                    |           |   |   └── ]
+                    |           |   |   └── y
                     |           |   ├── =
                     |           |   └── expression
                     |           |       └── simple-expression

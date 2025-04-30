@@ -44,10 +44,11 @@ int main(void) {
   int anotherResult;
   x = 10;
   y[0] = x;
+  
   {
     int z[6];
     int localVar;
-    localVar = z[0] + 5;
+    localVar = x + 5;
   }
 
   if (x > 5) {
