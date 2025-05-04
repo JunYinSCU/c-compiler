@@ -1,23 +1,36 @@
-* C-编译器/词法分析器/语法分析器/c-compiler/Lexer/Parser
+* C-编译器/词法分析器/语法分析器/c-compiler/LexicalAnalyzer/SyntaxAnalyzer
 # 四川大学计算机学院编译原理
 本项目为四川大学计算机学院编译原理实验课的期末大作业，包含了一个简单的C-语言编译器的词法分析器和语法分析器。
 
 ## 代码概述
-将代码拉下来即可在IDEA中运行，本人运行环境为Java11。Lexer的输入文件应该放在Lexer目录下。
+将代码拉下来即可运行，本人运行环境为Java11。
+* Lexical为词法分析器部分;LexicalAnalyzer为词法分析器的主要分析类。
+* Syntax为语法分析器部分;SyntaxAnalyzer为语法分析器的主要分析类。
 
 ### Lexer词法分析器
 1. Lexer文件为词法分析器代码文件，代码负责将提供的c-源代码转换为Token序列。
 2. Token类定义了Token的结构，包括类型Type、值value、位置row和column。
 3. IDKeyWord类定义了关键字和标识符的判断处理。
 4. Analyzer类负责一行一行读取源代码文件，并通过状态机进行词法分析，输出Token序列。
-   * 无参构造默认采用input.txt文件作为输入,output.txt为输出文件。
-   * 有参构造可以自定义输入和输出文件路径。
-   * 入口方法为start();可通过getTokens()方法获得Token序列。
-   * 示例的input文件包含了简单的C-语言代码，涉及大部分测试案例。
+   * 有参构造指定义输入和输出文件路径。
+   * 入口方法为analysis();可通过getTokens()方法获得Token序列。
+   * 示例TestCase文件包含了简单的C-语言代码，涉及大部分测试案例。
 
 
-### Parser语法分析器
-1. Parser文件为语法分析器代码文件，代码负责将Token序列进行语法分析，构建抽象语法树（AST）。
-
+### Syntax语法分析器
+1. Syntax文件为语法分析器代码文件，代码负责将Token序列进行语法分析，构建抽象语法树（AST）。
+2. ASTNode类定义了抽象语法树的节点结构，包括名称name、子节点列表children。
+3. SymbolEntry类定义了符号表的结构，包括符号名称name、类型type、参数个数paramCount。
+4. SymbolTable类定义了符号表的操作，包括插入、查找、删除等。
+5. SymbolStack类定义了一个符号栈，用于区分不同作用域的符号表，同时定义了一个全局符号表。
+6. SyntaxParser类负责语法分析，使用递归下降法进行语法分析，构建抽象语法树。
+   * 有参构造需要传入一个tokens列表。
+   * 入口方法为parse();可通过getRoot()方法获得抽象语法树，同时调用TreePrint类进行输出到文件或者到控制台。
 
 ## 实验要求：
+* 实现c-minus语言的小型编译器。
+* 实现c-minus语言的词法分析。
+* 实现c-minus语言的语法分析。
+* 使用C/C++语言或JAVA语言实现。
+* 提交编译原理课程设计实验报告。
+* c-minus语言的词法规则和语法规则参见c-词法以及语法。

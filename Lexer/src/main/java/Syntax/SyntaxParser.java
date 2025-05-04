@@ -5,7 +5,7 @@ import java.util.List;
 import Lexical.Token;
 
 public class SyntaxParser {
-    
+
     private LinkedList<Token> tokens;   //token列表
     private Token EOFToken = new Token("EOF", "$", -1, -1);     // 文件结束符
     private int current = 0;    // 当前token指针
@@ -193,7 +193,7 @@ public class SyntaxParser {
      * 文法1
      */
     private ASTNode program() throws ParserException{
-        System.out.println("program");
+        //System.out.println("program");
 
         //创建AST根节点
         ASTNode programNode = new ASTNode("Program");
@@ -214,7 +214,7 @@ public class SyntaxParser {
      * 文法2.1
      */
     private ASTNode declaration_list() throws ParserException{
-        System.out.println("declaration_list");
+        //System.out.println("declaration_list");
 
         ASTNode declarationListNode = new ASTNode("declaration-list");
 
@@ -233,7 +233,7 @@ public class SyntaxParser {
     * 
     */
     private LinkedList<ASTNode> declaration_list1() throws ParserException{
-        System.out.println("declaration_list1");
+        //System.out.println("declaration_list1");
 
         LinkedList<ASTNode> declarations = new LinkedList<>();
 
@@ -250,7 +250,7 @@ public class SyntaxParser {
     * 
     */
     private ASTNode declaration() throws ParserException{
-        System.out.println("declaration");
+        //System.out.println("declaration");
         ASTNode declarationNode = new ASTNode("declaration");
 
         if(isTypeSpecifier()){
@@ -261,6 +261,8 @@ public class SyntaxParser {
             }else if(nextNext.getValue().equals( "(")){
                 ASTNode funDeclarationNode = fun_declaration();
                 declarationNode.addChild(funDeclarationNode);
+            }else{
+                error("Expected ';' for var_declaration or '(' for func_declaration after type specifier", getCurrent());
             }
         }else{          
             error("Expected 'int' or 'void' at the beginning of a declaration", getCurrent());
@@ -273,7 +275,7 @@ public class SyntaxParser {
      * 文法4
      */
     private ASTNode var_declaration() throws ParserException{
-        System.out.println("var_declaration");
+        //System.out.println("var_declaration");
 
         ASTNode varDeclarationNode = new ASTNode("var-declaration");
 
@@ -312,7 +314,7 @@ public class SyntaxParser {
      * 文法5
      */
     private ASTNode type_specifier()throws ParserException{
-        System.out.println("type_specifier");
+        //System.out.println("type_specifier");
         ASTNode typeSpecifierNode = new ASTNode("type-specifier");
 
         Token INTtoken = new Token("KEYWORD","int");
@@ -385,12 +387,11 @@ public class SyntaxParser {
         /*---------------------------------------------------------- */
 
 
-        /*-------------在函数处理结束不服，判断是否存在没有返回语句的情况 -------------------*/
+        /*-------------在函数处理结束处，判断是否存在没有返回语句的情况 -------------------*/
         if(hasFunc && hasReturn){
             hasFunc = false;
             hasReturn = false;
         }else if(hasFunc && !hasReturn){
-            System.out.println(lastFuncType);
             if(lastFuncType.equals("int"))
             error("Function '" + funcName + "' expect " +lastFuncType+ " return type, but has no return statement. ");
         }
@@ -405,7 +406,7 @@ public class SyntaxParser {
      * 文法7
      */
     private ASTNode params()throws ParserException{
-        System.out.println("params");
+        //System.out.println("params");
         ASTNode paramsNode = new ASTNode("params");
 
         Token voidToken = new Token("KEYWORD","void");
@@ -422,8 +423,9 @@ public class SyntaxParser {
      * 文法8.1
      */
     private ASTNode param_list()throws ParserException{
-        System.out.println("param_list");
+        //System.out.println("param_list");
         ASTNode paramListNode = new ASTNode("param-list");
+
         paramListNode.addChild(param());
 
         LinkedList<ASTNode> paramList = param_list1();
@@ -438,7 +440,7 @@ public class SyntaxParser {
      * 文法8.2
      */
     private LinkedList<ASTNode> param_list1()throws ParserException{
-        System.out.println("param_list1");
+        //System.out.println("param_list1");
         LinkedList<ASTNode> paramList = new LinkedList<>();
         Token commaToken = new Token("SEPARATOR",",");
         while(match(commaToken)){
@@ -453,7 +455,7 @@ public class SyntaxParser {
      * 文法9
      */
     private ASTNode param()throws ParserException{
-        System.out.println("param");
+        //System.out.println("param");
         ASTNode paramNode = new ASTNode("param");
 
         ASTNode typeSpecifierNode = type_specifier();
@@ -485,7 +487,7 @@ public class SyntaxParser {
      * 文法10
      */
     private ASTNode compound_stmt()throws ParserException{
-        System.out.println("compound_stmt");
+        //System.out.println("compound_stmt");
         ASTNode compoundStmtNode = new ASTNode("compound-stmt");
 
         compoundStmtNode.addChild(consume(new Token("SEPARATOR","{")));
@@ -501,7 +503,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode local_declarations()throws ParserException{
-        System.out.println("local_declarations");
+        //System.out.println("local_declarations");
         ASTNode localDeclarationsNode = new ASTNode("local-declarations");
 
         LinkedList<ASTNode> list = local_declarations1();
@@ -517,7 +519,7 @@ public class SyntaxParser {
      * 
      */
     private LinkedList<ASTNode> local_declarations1()throws ParserException{
-        System.out.println("local_declarations1");
+        //System.out.println("local_declarations1");
         LinkedList<ASTNode> localDeclarations = new LinkedList<>();
         while(isTypeSpecifier()){
             localDeclarations.add(var_declaration());
@@ -532,7 +534,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode statement_list()throws ParserException{
-        System.out.println("statement_list");
+        //System.out.println("statement_list");
         ASTNode statementListNode = new ASTNode("statement-list");
 
         LinkedList<ASTNode> statementList = statement_list1();
@@ -548,7 +550,7 @@ public class SyntaxParser {
      * 
      */
     private LinkedList<ASTNode> statement_list1()throws ParserException{
-        System.out.println("statement_list1");
+        //System.out.println("statement_list1");
         LinkedList<ASTNode> statementList = new LinkedList<>();
         while(isStatement()){
             statementList.add(statement());
@@ -568,7 +570,7 @@ public class SyntaxParser {
      * 为expression_stmt、compound_stmt、selection_stmt、iteration_stmt、return_stmt时进入statement
      */
     private ASTNode statement() throws ParserException{
-        System.out.println("statement");
+        //System.out.println("statement");
         ASTNode statementNode = new ASTNode("statement");
 
         if(!isAtEnd()){
@@ -622,7 +624,7 @@ public class SyntaxParser {
      * 为expression或者;时进入expression_stmt
      */
     private ASTNode expression_stmt() throws ParserException{
-        System.out.println("expression_stmt");
+        //System.out.println("expression_stmt");
         ASTNode expressionStmtNode = new ASTNode("expression-stmt");
         
         if(isExpression()){
@@ -646,7 +648,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode selection_stmt()throws ParserException{
-        System.out.println("selection_stmt");
+        //System.out.println("selection_stmt");
         ASTNode selectionStmtNode = new ASTNode("selection-stmt");
 
         selectionStmtNode.addChild(consume(new Token("KEYWORD","if")));
@@ -668,7 +670,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode iteration_stmt()throws ParserException{
-        System.out.println("iteration_stmt");
+        //System.out.println("iteration_stmt");
         ASTNode iterationStmtNode = new ASTNode("iteration-stmt");
 
         iterationStmtNode.addChild(consume(new Token("KEYWORD","while")));
@@ -685,7 +687,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode return_stmt()throws ParserException{
-        System.out.println("return_stmt");
+        //System.out.println("return_stmt");
         ASTNode returnStmtNode = new ASTNode("return-stmt");
 
         returnStmtNode.addChild(consume(new Token("KEYWORD","return")));
@@ -722,7 +724,7 @@ public class SyntaxParser {
      * expression文法定义较为复杂
      */
     private ASTNode expression()throws ParserException{
-        System.out.println("expression");
+        //System.out.println("expression");
         ASTNode expressionNode = new ASTNode("expression");
 
         // 先保存当前Token位置，方便回溯
@@ -766,7 +768,7 @@ public class SyntaxParser {
      * 为ID时进入var
      */
     private ASTNode var() throws ParserException{
-        System.out.println("var");
+        //System.out.println("var");
         ASTNode varNode = new ASTNode("var");
 
         varNode.addChild(consume(new Token("ID","null")));
@@ -791,7 +793,7 @@ public class SyntaxParser {
      * 第一个为term时进入simple_expression
      */
     private ASTNode simple_expression() throws ParserException{
-        System.out.println("simple_expression");
+        //System.out.println("simple_expression");
         ASTNode simpleExpressionNode = new ASTNode("simple-expression");
 
         simpleExpressionNode.addChild(additive_expression());
@@ -815,7 +817,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode relop() throws ParserException{
-        System.out.println("relop");
+        //System.out.println("relop");
         ASTNode relopNode = new ASTNode("relop");
 
         if(isRelop()){
@@ -836,7 +838,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode additive_expression() throws ParserException{
-        System.out.println("additive_expression");
+        //System.out.println("additive_expression");
         ASTNode additiveExpressionNode = new ASTNode("additive-expression");
 
         additiveExpressionNode.addChild(term());
@@ -853,7 +855,7 @@ public class SyntaxParser {
      * 
      */
     private LinkedList<ASTNode> additive_expression1()throws ParserException {
-        System.out.println("additive_expression1");
+        //System.out.println("additive_expression1");
         LinkedList<ASTNode> additiveExpressionList = new LinkedList<>();
 
         while(isAddop()){
@@ -875,7 +877,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode addop()throws ParserException{
-        System.out.println("addop");
+        //System.out.println("addop");
         ASTNode addopNode = new ASTNode("addop");
 
         if(isAddop()){
@@ -896,7 +898,7 @@ public class SyntaxParser {
      * 为factor时进入term
      */
     private ASTNode term() throws ParserException{
-        System.out.println("term");
+        //System.out.println("term");
         ASTNode termNode = new ASTNode("term");
 
         termNode.addChild(factor());
@@ -914,7 +916,7 @@ public class SyntaxParser {
      * 
      */
     private LinkedList<ASTNode> term1() throws ParserException{
-        System.out.println("term1");
+        //System.out.println("term1");
         LinkedList<ASTNode> termList = new LinkedList<>();
 
         while(isMulop()){
@@ -934,7 +936,7 @@ public class SyntaxParser {
      * 文法25
      */
     private ASTNode mulop()throws ParserException{
-        System.out.println("mulop");
+        //System.out.println("mulop");
         ASTNode mulopNode = new ASTNode("mulop");
 
        if(isMulop()){
@@ -955,7 +957,7 @@ public class SyntaxParser {
      * 为( ID  NUM时进入factor 
      */
     private ASTNode factor() throws ParserException{
-        System.out.println("factor");
+        //System.out.println("factor");
         ASTNode factorNode = new ASTNode("factor");
 
         Token leftBracket = new Token("SEPARATOR", "(");
@@ -994,7 +996,7 @@ public class SyntaxParser {
      * 
      */
     private ASTNode call() throws ParserException{
-        System.out.println("call");
+        //System.out.println("call");
         ASTNode callNode = new ASTNode("call");
 
         callNode.addChild(consume(new Token("ID","null")));
@@ -1016,9 +1018,9 @@ public class SyntaxParser {
             ASTNode argsListNode = argsNode.getChildren().get(0); //args-list
             paramCount = argsListNode.getChildren().size() / 2 + 1; //参数个数
         }
-        SymbolEntry entry = symbolTableStack.lookupAtGlobal(funName);
-        
-        if(entry.getParamCount() != paramCount) {
+
+        SymbolEntry entry = symbolTableStack.lookupAtGlobal(funName);   //获取符号表中函数的参数个数       
+        if(entry.getParamCount() != paramCount) {   //如果参数个数不匹配
             error("Function '" + funName + "' need " + entry.getParamCount() + " params, but it  got " + paramCount + " arguments ");
         }
         /*---------------------------------------------------------- */
@@ -1031,8 +1033,9 @@ public class SyntaxParser {
      * 
      */
     private ASTNode args() throws ParserException{
-        System.out.println("args");
+        //System.out.println("args");
         ASTNode argsNode = new ASTNode("args");
+
         if(isExpression()){
             argsNode.addChild(args_list());
         }
@@ -1046,14 +1049,16 @@ public class SyntaxParser {
      * 
      */
     private ASTNode args_list() throws ParserException{
-        System.out.println("args_list");
+        //System.out.println("args_list");
         ASTNode argsListNode = new ASTNode("args-list");
+
         argsListNode.addChild(expression());
 
         LinkedList<ASTNode> list  = args_list1();
         for (ASTNode node : list) {
             argsListNode.addChild(node);
         }
+
         return argsListNode;
     }
 
@@ -1062,7 +1067,7 @@ public class SyntaxParser {
      * 
      */
     private LinkedList<ASTNode> args_list1() throws ParserException{
-        System.out.println("args_list1");
+        //System.out.println("args_list1");
         LinkedList<ASTNode> argsList = new LinkedList<>();
 
         Token comma = new Token("SEPARATOR", ",");

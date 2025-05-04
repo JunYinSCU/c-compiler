@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.LinkedList;
-
+import Syntax.ParserException;
 
 public class LexicalAnalyzer {
 	private LinkedList<Character> lexemeBuffer = new LinkedList<>();	//存储当前词素
@@ -101,13 +101,18 @@ public class LexicalAnalyzer {
 		output.newLine();
 	}
 
+	private void error(String message) throws ParserException{	//错误处理函数
+		//System.out.println("Error: " + message);
+		throw new ParserException(message);	//抛出异常
+	}
+
 	//词法分析器的入口函数
-	public void start(){	
+	public void analysis() throws IOException, ParserException{	
 		getText();
 	}
 
 	//获取每一行进行分析
-	private void getText() {	
+	private void getText() throws IOException, ParserException {	
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(inputFile));
@@ -116,8 +121,6 @@ public class LexicalAnalyzer {
 				row++;			//新行，则行号增加
 				Analysis();		//对这一行进行词法分析
 			}
-		}catch (Exception e) {
-
 		} finally {
 			if (bufferedReader != null)
 				try {
@@ -135,7 +138,7 @@ public class LexicalAnalyzer {
 	}
 
 	//状态机分析
-	private void Analysis() throws IOException {
+	private void Analysis() throws IOException, ParserException {
 		int state;	//用于判断当前状态
 
 		if(inMultilineComment){		//如果是在多行注释的状态，则起始状态为STATE_IN_COMMENT
@@ -214,8 +217,7 @@ public class LexicalAnalyzer {
 							break;
 						}
 						if (c != ' ') {		//如果不是空格，则无法识别，是非法字符。
-							System.out.println("非法字符:"+c);
-							output.write("非法字符:"+c);
+							error("非法字符:"+c);
 							output.newLine();
 							lexemeBuffer.clear();
 						}
