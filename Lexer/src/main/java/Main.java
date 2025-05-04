@@ -9,9 +9,9 @@ import Syntax.SyntaxParser;
 
 public class Main {
     public static void main(String[] args) throws ParserException {
-        String SourceInputFile = "Lexer/test3.txt";
-        String TokensOutputFile = "Lexer/test3_tokens.txt";
-        String ASTOutputFile = "Lexer/test3_AST.txt";
+        String SourceInputFile = "Lexer/TestCase/test0.txt";
+        String TokensOutputFile = "Lexer/TestCase/test0_tokens.txt";
+        String ASTOutputFile = "Lexer/TestCase/test0_AST.txt";
 
         //构建词法分析器
         LexicalAnalyzer analyzer = new LexicalAnalyzer(SourceInputFile, TokensOutputFile);

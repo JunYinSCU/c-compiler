@@ -1,0 +1,14 @@
+void main(void){
+
+int a;
+
+/* hello compiler!
+@author   YinJun
+*/
+
+while( a[0] == 0)
+{
+    a[0] * 4 / 2 + 3 - 1;
+}
+
+}
