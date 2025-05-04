@@ -58,6 +58,46 @@
                     |   |       |                   └── factor
                     |   |       |                       └── 5
                     |   |       └── ;
+                    |   ├── statement
+                    |   |   └── expression-stmt
+                    |   |       ├── expression
+                    |   |       |   ├── var
+                    |   |       |   |   └── input
+                    |   |       |   └── simple-expression
+                    |   |       |       └── additive-expression
+                    |   |       |           └── term
+                    |   |       |               └── factor
+                    |   |       |                   └── call
+                    |   |       |                       ├── input
+                    |   |       |                       ├── (
+                    |   |       |                       ├── args
+                    |   |       |                       └── )
+                    |   |       └── ;
+                    |   ├── statement
+                    |   |   └── expression-stmt
+                    |   |       ├── expression
+                    |   |       |   ├── var
+                    |   |       |   |   └── output
+                    |   |       |   └── simple-expression
+                    |   |       |       └── additive-expression
+                    |   |       |           └── term
+                    |   |       |               └── factor
+                    |   |       |                   └── call
+                    |   |       |                       ├── output
+                    |   |       |                       ├── (
+                    |   |       |                       ├── args
+                    |   |       |                       |   └── args-list
+                    |   |       |                       |       └── expression
+                    |   |       |                       |           ├── var
+                    |   |       |                       |           |   └── y
+                    |   |       |                       |           └── simple-expression
+                    |   |       |                       |               └── additive-expression
+                    |   |       |                       |                   └── term
+                    |   |       |                       |                       └── factor
+                    |   |       |                       |                           └── var
+                    |   |       |                       |                               └── y
+                    |   |       |                       └── )
+                    |   |       └── ;
                     |   └── statement
                     |       └── return-stmt
                     |           ├── return

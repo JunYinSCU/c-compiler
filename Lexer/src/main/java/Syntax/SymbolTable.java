@@ -26,7 +26,7 @@ class SymbolTable {
             String name = entry.getKey();
             SymbolEntry symbolEntry = entry.getValue();
             System.out.println("Name: " + name + ", Type: " + symbolEntry.getType() +
-                    (symbolEntry.isFunction() ? ", ParamCount: " + symbolEntry.getParamCount() : ""));
+                    ", ParamCount: " + symbolEntry.getParamCount());
         }
     }
 }

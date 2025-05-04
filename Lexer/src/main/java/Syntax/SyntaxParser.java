@@ -5,12 +5,14 @@ import java.util.List;
 import Lexical.Token;
 
 public class SyntaxParser {
+    
     private LinkedList<Token> tokens;   //token列表
     private Token EOFToken = new Token("EOF", "$", -1, -1);     // 文件结束符
     private int current = 0;    // 当前token指针
     private ASTNode root;   // 语法树根节点
     boolean hasError = false; // 是否存在语法错误
-    private SymbolTableStack symbolTableStack = new SymbolTableStack(); //符号表列表，用于存储函数参数和局部变量
+    private SymbolTableStack symbolTableStack = new SymbolTableStack(); //符号表栈，用于存储函数参数和局部变量
+
     private String lastFuncType;    // 记录上一次函数的返回值类型
     private boolean hasFunc = false;
     private String lastReturnType;  //记录上一次return语句返回类型
@@ -169,7 +171,7 @@ public class SyntaxParser {
 
     private void error(String message) throws ParserException{
         hasError = true;
-        String errorMessage = message + "row:" + previous().getRow() + ", column " + previous().getColum();
+        String errorMessage = message + "  (row:" + previous().getRow() + ",column " + previous().getColum()+")";
         throw new ParserException(errorMessage);
     }
 
@@ -358,7 +360,7 @@ public class SyntaxParser {
         String funcName = previous().getValue();
         hasFunc = true;
         if(symbolTableStack.containsInGlobal(funcName)) {
-            error("Function '" + funcName + "' is already declared in this scope");
+            error("Function '" + funcName + "' is already declared in this scope ");
         }
         
         funDeclarationNode.addChild(consume(new Token("SEPARATOR","(")));
@@ -1000,7 +1002,7 @@ public class SyntaxParser {
         //匹配ID后，前一个token为函数名，检查符号表
         String funName = previous().getValue();
         if(!symbolTableStack.containsInGlobalAndThis(funName)) {
-            error("Function '" + funName + "' is not declared in this scope");
+            error("Function '" + funName + "' is not declared in this scope ");
         }
 
         callNode.addChild(consume(new Token("SEPARATOR","(")));
@@ -1017,7 +1019,7 @@ public class SyntaxParser {
         SymbolEntry entry = symbolTableStack.lookupAtGlobal(funName);
         
         if(entry.getParamCount() != paramCount) {
-            error("Function '" + funName + "' need " + entry.getParamCount() + " params, but it  got " + paramCount + " arguments");
+            error("Function '" + funName + "' need " + entry.getParamCount() + " params, but it  got " + paramCount + " arguments ");
         }
         /*---------------------------------------------------------- */
 

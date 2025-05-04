@@ -11,6 +11,12 @@ class SymbolTableStack {
     public SymbolTableStack() {
         stack = new LinkedList<>();
         currentLevel = -1;
+
+        // 初始化全局符号表,添加内置input和output函数
+        SymbolEntry inputEntry = new SymbolEntry("input","int",0);
+        globalTable.addSymbol("input", inputEntry);
+        SymbolEntry outputEntry = new SymbolEntry("output","void",1);
+        globalTable.addSymbol("output", outputEntry);
     }
 
     // 推入新的符号表（例如函数开始时）

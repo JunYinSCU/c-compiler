@@ -4,5 +4,10 @@ int main(void){
     int y;
     a + 2;
     y = 5;
+
+    input();
+    output(y);
+
     return y;
+    
 }

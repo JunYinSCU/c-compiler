@@ -9,9 +9,9 @@ import Syntax.SyntaxParser;
 
 public class Main {
     public static void main(String[] args) throws ParserException {
-        String SourceInputFile = "Lexer/test1.txt";
-        String TokensOutputFile = "Lexer/test1_tokens.txt";
-        String ASTOutputFile = "Lexer/test1_AST.txt";
+        String SourceInputFile = "Lexer/test3.txt";
+        String TokensOutputFile = "Lexer/test3_tokens.txt";
+        String ASTOutputFile = "Lexer/test3_AST.txt";
 
         //构建词法分析器
         LexicalAnalyzer analyzer = new LexicalAnalyzer(SourceInputFile, TokensOutputFile);
@@ -32,7 +32,7 @@ public class Main {
         /*
          * 存在的bug：
          * 1. 声明语句必须在每段的开头（不知道是定义还是bug）
-         * 2. input和output的定义不清楚
+         * 2. input和output的定义不清楚,初步尝试将input和output的定义放在全局符号表中，
          */
 
     }
