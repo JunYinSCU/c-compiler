@@ -96,8 +96,6 @@ KEYWORD  ID   NUM  OPERATOR  SEPARATOR   COMMENT
 
 
 
-
-
 对以上每条文法规则，给出相关语义的简要解释：
 
 1. program → declaration-list
