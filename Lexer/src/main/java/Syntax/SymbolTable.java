@@ -21,12 +21,4 @@ class SymbolTable {
         return table.containsKey(name);
     }
 
-    public void printAll(){
-        for (Map.Entry<String, SymbolEntry> entry : table.entrySet()) {
-            String name = entry.getKey();
-            SymbolEntry symbolEntry = entry.getValue();
-            System.out.println("Name: " + name + ", Type: " + symbolEntry.getType() +
-                    ", ParamCount: " + symbolEntry.getParamCount());
-        }
-    }
 }

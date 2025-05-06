@@ -59,6 +59,7 @@ class SymbolTableStack {
         return getCurrentTable().lookup(name);
     }
 
+    //查找全局符号表中是否有符号
     public SymbolEntry lookupAtGlobal(String name) {
         return getGlobalTable().lookup(name);
     }
@@ -68,7 +69,7 @@ class SymbolTableStack {
         return getCurrentTable().contains(name);
     }
 
-    // 查找当前符号表及其以下的符号表中是否有符号
+    // 查找当前符号表及其以下层次的符号表中是否有符号
     public boolean containsBellow(String name) {
         //先检查全局变量表中是否有符号
         if(containsInGlobal(name)){
