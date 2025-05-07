@@ -39,7 +39,6 @@ public class SyntaxParser {
 
     /*
      * 将current指针向前移动一位
-     * 
      */
     private void advance() {
         if(current < tokens.size() - 1){
@@ -48,7 +47,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 向后移动一位
+     * 将current指针向后移动一位
      */
     private void back() {
         if(current > 0){
@@ -77,17 +76,22 @@ public class SyntaxParser {
      * 获取前一个token，指针不移动
      */
     private Token previous() {
+        if(current == 0){
+            return null;
+        }
         return tokens.get(current - 1);
     }
     /*
      * 获取下一个token，指针不移动
      */
     private Token next() {
+        if(current + 1 >= tokens.size()){
+            return null;
+        }
         return tokens.get(current + 1);
     }
 
     /*
-     *
      * match方法用于判断当前token的类型是否与传入的token的类型相同
      * 先判断传入token的值是否为null，是则说明只需比较类型
      * 否则比较类型和值
@@ -144,6 +148,7 @@ public class SyntaxParser {
      * consume方法只用于匹配终结符token，调用match方法进行匹配
      * 无论是否匹配成功，都会将指针向前移动一位
      * 如果匹配失败，则调用error方法,提示当前token错误
+     * @return ASTNode对象
      */
     private ASTNode consume(Token expectedToken) throws ParserException {
         if (!match(expectedToken)) {
@@ -190,7 +195,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法1
+     * 文法1. program → declaration-list
      */
     private ASTNode program() throws ParserException{
         //System.out.println("program");
@@ -211,7 +216,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法2.1
+     * 文法2.1 declaration-list → declaration declaration-list'
      */
     private ASTNode declaration_list() throws ParserException{
         //System.out.println("declaration_list");
