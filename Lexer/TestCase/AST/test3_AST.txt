@@ -1,0 +1,57 @@
+└── Program
+    └── declaration-list
+        └── declaration
+            └── fun-declaration
+                ├── type-specifier
+                |   └── int
+                ├── main
+                ├── (
+                ├── params
+                |   └── void
+                ├── )
+                └── compound-stmt
+                    ├── {
+                    ├── local-declarations
+                    |   ├── var-declaration
+                    |   |   ├── type-specifier
+                    |   |   |   └── int
+                    |   |   ├── localVar
+                    |   |   └── ;
+                    |   ├── var-declaration
+                    |   |   ├── type-specifier
+                    |   |   |   └── int
+                    |   |   ├── a
+                    |   |   └── ;
+                    |   └── var-declaration
+                    |       ├── type-specifier
+                    |       |   └── int
+                    |       ├── y
+                    |       └── ;
+                    ├── statement-list
+                    |   ├── statement
+                    |   |   └── expression-stmt
+                    |   |       ├── expression
+                    |   |       |   ├── var
+                    |   |       |   |   └── y
+                    |   |       |   ├── =
+                    |   |       |   └── expression
+                    |   |       |       └── simple-expression
+                    |   |       |           └── additive-expression
+                    |   |       |               └── term
+                    |   |       |                   └── factor
+                    |   |       |                       └── 5
+                    |   |       └── ;
+                    |   └── statement
+                    |       └── return-stmt
+                    |           ├── return
+                    |           ├── expression
+                    |           |   ├── var
+                    |           |   |   └── y
+                    |           |   └── simple-expression
+                    |           |       └── additive-expression
+                    |           |           └── term
+                    |           |               └── factor
+                    |           |                   └── var
+                    |           |                       └── y
+                    |           └── ;
+                    └── }

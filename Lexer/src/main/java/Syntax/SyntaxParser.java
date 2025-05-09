@@ -234,7 +234,7 @@ public class SyntaxParser {
     }
 
     /*
-    * 文法2.2
+    * 文法2.2 declaration-list' → declaration declaration-list' | ε
     * 
     */
     private LinkedList<ASTNode> declaration_list1() throws ParserException{
@@ -251,7 +251,7 @@ public class SyntaxParser {
     }
 
     /*
-    * 文法3
+    * 文法3 declaration → var-declaration | fun-declaration
     * 
     */
     private ASTNode declaration() throws ParserException{
@@ -277,7 +277,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法4
+     * 文法4 var-declaration → type-specifier ID ; | type-specifier ID [ NUM ] ;
      */
     private ASTNode var_declaration() throws ParserException{
         //System.out.println("var_declaration");
@@ -316,7 +316,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法5
+     * 文法5. type-specifier → int | void
      */
     private ASTNode type_specifier()throws ParserException{
         //System.out.println("type_specifier");
@@ -344,7 +344,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法6
+     * 文法6 fun-declaration → type-specifier ID ( params ) compound-stmt
      */
     private ASTNode fun_declaration()throws ParserException {
 
@@ -408,7 +408,7 @@ public class SyntaxParser {
     }
     
     /*
-     * 文法7
+     * 文法7. params → param-list | void
      */
     private ASTNode params()throws ParserException{
         //System.out.println("params");
@@ -425,7 +425,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法8.1
+     * 文法8.1 param-list → param param-list'
      */
     private ASTNode param_list()throws ParserException{
         //System.out.println("param_list");
@@ -442,7 +442,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法8.2
+     * 文法8.2 param-list' → , param param-list' | ε
      */
     private LinkedList<ASTNode> param_list1()throws ParserException{
         //System.out.println("param_list1");
@@ -457,7 +457,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法9
+     * 文法9 param → type-specifier ID | type-specifier ID [ ]
      */
     private ASTNode param()throws ParserException{
         //System.out.println("param");
@@ -489,7 +489,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法10
+     * 文法10 compound-stmt → { local-declarations statement-list }
      */
     private ASTNode compound_stmt()throws ParserException{
         //System.out.println("compound_stmt");
@@ -504,7 +504,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法11.1
+     * 文法11.1 local-declarations → local-declarations'
      * 
      */
     private ASTNode local_declarations()throws ParserException{
@@ -520,7 +520,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法11.2
+     * 文法11.2 local-declarations' → var-declaration local-declarations' | ε
      * 
      */
     private LinkedList<ASTNode> local_declarations1()throws ParserException{
@@ -535,7 +535,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法12.1
+     * 文法12.1 statement-list → statement_list'
      * 
      */
     private ASTNode statement_list()throws ParserException{
@@ -551,7 +551,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法12.2
+     * 文法12.2 statement_list' → statement | ε
      * 
      */
     private LinkedList<ASTNode> statement_list1()throws ParserException{
@@ -571,7 +571,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法13
+     * 文法13 statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt
      * 为expression_stmt、compound_stmt、selection_stmt、iteration_stmt、return_stmt时进入statement
      */
     private ASTNode statement() throws ParserException{
@@ -625,7 +625,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法14
+     * 文法14 expression-stmt → expression ; | ;
      * 为expression或者;时进入expression_stmt
      */
     private ASTNode expression_stmt() throws ParserException{
@@ -643,13 +643,14 @@ public class SyntaxParser {
 
     private boolean isExpression() {
         // 层层归结  最后当token为( ID  NUM 时进入expression
-        return match(new Token("ID", "null")) || match(new Token("NUM", "null")) ||
-                match(new Token("SEPARATOR","("));
+        return match(new Token("ID", "null")) ||
+               match(new Token("NUM", "null")) ||
+               match(new Token("SEPARATOR","("));
     }
 
 
     /*
-     * 文法15
+     * 文法15 selection-stmt → if ( expression ) statement | if ( expression ) statement else statement
      * 
      */
     private ASTNode selection_stmt()throws ParserException{
@@ -671,7 +672,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法16
+     * 文法16 iteration-stmt → while ( expression ) statement
      * 
      */
     private ASTNode iteration_stmt()throws ParserException{
@@ -688,7 +689,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法17
+     * 文法17 return-stmt → return ; | return expression ;
      * 
      */
     private ASTNode return_stmt()throws ParserException{
@@ -724,7 +725,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法18
+     * 文法18  expression → var = expression | simple-expression
      * 为var或者simple_expression时进入expression
      * expression文法定义较为复杂
      */
@@ -769,7 +770,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法19
+     * 文法19 var → ID | ID [ expression ]
      * 为ID时进入var
      */
     private ASTNode var() throws ParserException{
@@ -794,7 +795,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法20
+     * 文法20 simple-expression → additive-expression relop additive-expression | additive-expression
      * 第一个为term时进入simple_expression
      */
     private ASTNode simple_expression() throws ParserException{
@@ -818,7 +819,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法21
+     * 文法21 relop → <= | < | > | >= | == | !=
      * 
      */
     private ASTNode relop() throws ParserException{
@@ -832,14 +833,13 @@ public class SyntaxParser {
         }else{
             //如果都不匹配，则说明当前是错误的token,提示错误并向前移动
             error("Expected relop e.g. <= < >= > ... here",getCurrent());
-            advance();
         }
 
         return relopNode;
     }
 
     /*
-     * 文法22.1
+     * 文法22.1 additive-expression → term additive-expression'
      * 
      */
     private ASTNode additive_expression() throws ParserException{
@@ -856,7 +856,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法22.2
+     * 文法22.2 additive-expression' → addop term additive-expression' | ε
      * 
      */
     private LinkedList<ASTNode> additive_expression1()throws ParserException {
@@ -874,12 +874,12 @@ public class SyntaxParser {
 
     private boolean isAddop() {
         // + -
-        return match(new Token("OPERATOR", "+")) || match(new Token("OPERATOR", "-"));
+        return match(new Token("OPERATOR", "+")) ||
+               match(new Token("OPERATOR", "-"));
     }
 
     /*
-     * 文法23
-     * 
+     * 文法23 addop → + | -
      */
     private ASTNode addop()throws ParserException{
         //System.out.println("addop");
@@ -899,7 +899,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法24.1
+     * 文法24.1 term → factor term'
      * 为factor时进入term
      */
     private ASTNode term() throws ParserException{
@@ -917,7 +917,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法24.2
+     * 文法24.2 term' → mulop factor term' | ε
      * 
      */
     private LinkedList<ASTNode> term1() throws ParserException{
@@ -934,11 +934,12 @@ public class SyntaxParser {
 
     private boolean isMulop() {
         // * /
-        return match(new Token("OPERATOR", "*")) || match(new Token("OPERATOR", "/"));
+        return match(new Token("OPERATOR", "*")) ||
+               match(new Token("OPERATOR", "/"));
     }
 
     /* 
-     * 文法25
+     * 文法25 mulop → * | /
      */
     private ASTNode mulop()throws ParserException{
         //System.out.println("mulop");
@@ -958,7 +959,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法26
+     * 文法26 factor → ( expression ) | var | call | NUM
      * 为( ID  NUM时进入factor 
      */
     private ASTNode factor() throws ParserException{
@@ -997,7 +998,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法27
+     * 文法27 call → ID ( args )
      * 
      */
     private ASTNode call() throws ParserException{
@@ -1034,7 +1035,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法28
+     * 文法28 args → arg-list | empty
      * 
      */
     private ASTNode args() throws ParserException{
@@ -1050,8 +1051,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法29.1
-     * 
+     * 文法29.1 arg-list → expression arg-list'
      */
     private ASTNode args_list() throws ParserException{
         //System.out.println("args_list");
@@ -1068,8 +1068,7 @@ public class SyntaxParser {
     }
 
     /*
-     * 文法29.2
-     * 
+     * 文法29.2 arg-list' → , expression arg-list' | ε
      */
     private LinkedList<ASTNode> args_list1() throws ParserException{
         //System.out.println("args_list1");

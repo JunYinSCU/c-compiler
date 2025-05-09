@@ -16,14 +16,13 @@ void main(void) {
 
   a = 5;
   b[0] = a; 
-  c = max(1,2);
+
+  /*错误1:函数参数个数不匹配*/
+  c = max(1);
+
   a = add(10,5);
 
-  input();
-  output(a);
+  /*错误2:返回值类型错误*/
+  /*return a;*/
+
 }
-
-
-
-
-

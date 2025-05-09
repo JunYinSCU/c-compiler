@@ -85,4 +85,13 @@
 < NUM , 5 , (row=20 , column=13) >
 < SEPARATOR , ) , (row=20 , column=14) >
 < SEPARATOR , ; , (row=20 , column=15) >
-< SEPARATOR , } , (row=21 , column=0) >
+< ID , input , (row=22 , column=2) >
+< SEPARATOR , ( , (row=22 , column=7) >
+< SEPARATOR , ) , (row=22 , column=8) >
+< SEPARATOR , ; , (row=22 , column=9) >
+< ID , output , (row=23 , column=2) >
+< SEPARATOR , ( , (row=23 , column=8) >
+< ID , a , (row=23 , column=9) >
+< SEPARATOR , ) , (row=23 , column=10) >
+< SEPARATOR , ; , (row=23 , column=11) >
+< SEPARATOR , } , (row=24 , column=0) >

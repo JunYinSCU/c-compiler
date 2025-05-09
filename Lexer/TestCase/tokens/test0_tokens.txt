@@ -1,0 +1,23 @@
+< KEYWORD , void , (row=1 , column=0) >
+< ID , main , (row=1 , column=5) >
+< SEPARATOR , ( , (row=1 , column=9) >
+< KEYWORD , void , (row=1 , column=10) >
+< SEPARATOR , ) , (row=1 , column=14) >
+< SEPARATOR , { , (row=1 , column=15) >
+< KEYWORD , int , (row=3 , column=0) >
+< ID , a , (row=3 , column=4) >
+< SEPARATOR , ; , (row=3 , column=5) >
+< COMMENT , hello compiler!\n @author   YinJun\n , (row=5 , column=0) >
+< ID , a , (row=8 , column=4) >
+< OPERATOR , = , (row=8 , column=6) >
+< ID , a , (row=8 , column=8) >
+< OPERATOR , * , (row=8 , column=10) >
+< NUM , 4 , (row=8 , column=12) >
+< OPERATOR , / , (row=8 , column=14) >
+< NUM , 2 , (row=8 , column=16) >
+< OPERATOR , + , (row=8 , column=18) >
+< NUM , 3 , (row=8 , column=20) >
+< OPERATOR , - , (row=8 , column=22) >
+< NUM , 1 , (row=8 , column=24) >
+< SEPARATOR , ; , (row=8 , column=25) >
+< SEPARATOR , } , (row=9 , column=0) >

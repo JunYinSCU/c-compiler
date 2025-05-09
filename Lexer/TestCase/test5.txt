@@ -1,0 +1,68 @@
+void printArray(int arr[], int size) {
+  int i;
+  i = 0;
+  while (i < size) {
+    int temp;
+    temp = arr[i];
+    i = i + 1;
+  }
+}
+
+
+int getValue(void) {
+  return 1;
+}
+
+int add(int a, int b) {
+  return a + b;
+}
+
+int main(void) {
+  int x;
+  int y[5];
+  int result;
+  int anotherResult;
+
+  /*错误1:缺少分号*/
+  x = 10
+
+  y[0] = x;
+  
+  {
+    int z[6];
+    int localVar;
+    localVar = x + 5;
+  }
+
+  /*错误2:使用了局部域的变量*/
+  /*localVar = 1;*/
+
+  if (x > 5) {
+    x = x - 2;
+  } else {
+    x = x + 2;
+  }
+
+  if (x == 8)
+    return x;
+   
+  result = add(y[0], getValue());
+  
+  anotherResult = (add(5, getValue())) * 2;
+
+  while (y < 15) {
+    y = y + 1;
+  }
+
+  /*错误3:错误的运算*/
+  /*y = x + - 1;*/
+
+  if (x <= 10) return 0;
+  if (x < 10) return 0;
+  if (x > 10) return 0;
+  if (x >= 10) return 0;
+  if (x == 10) return 0;
+  if (x != 10) return 0;
+
+  return 1;
+}

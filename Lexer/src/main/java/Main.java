@@ -10,9 +10,9 @@ import Syntax.SyntaxParser;
 
 public class Main {
     public static void main(String[] args) throws ParserException, IOException {
-        String SourceInputFile = "Lexer/TestCase/test0.txt";
-        String TokensOutputFile = "Lexer/TestCase/test0_tokens.txt";
-        String ASTOutputFile = "Lexer/TestCase/test0_AST.txt";
+        String SourceInputFile = "Lexer/TestCase/test4.txt";
+        String TokensOutputFile = "Lexer/TestCase/tokens/test4_tokens.txt";
+        String ASTOutputFile = "Lexer/TestCase/AST/test4_AST.txt";
 
         //构建词法分析器
         LexicalAnalyzer analyzer = new LexicalAnalyzer(SourceInputFile, TokensOutputFile);
@@ -29,12 +29,7 @@ public class Main {
 
         //输出语法树
         TreePrinter.print(ASTOutputFile,root);
-        
-        /*
-         * 存在的bug：
-         * 1. 声明语句必须在每段的开头（不知道是定义还是bug）
-         * 2. input和output的定义不清楚,初步尝试将input和output的定义放在全局符号表中，
-         */
+    
 
     }
 }

@@ -2,12 +2,16 @@ int main(void){
     int localVar;
     int a;
     int y;
-    a + 2;
+
+    /*错误1: 重复定义变量*/
+    /*int a;*/
+
     y = 5;
 
-    input();
-    output(y);
+    /*错误2:使用未声明的变量*/
+    /*c = 1;*/
 
-    return y;
+    /*错误3: 缺少返回语句*/
+    /*return y;*/
     
 }
