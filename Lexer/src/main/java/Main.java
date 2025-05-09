@@ -10,9 +10,9 @@ import Syntax.SyntaxParser;
 
 public class Main {
     public static void main(String[] args) throws ParserException, IOException {
-        String SourceInputFile = "Lexer/TestCase/test4.txt";
-        String TokensOutputFile = "Lexer/TestCase/tokens/test4_tokens.txt";
-        String ASTOutputFile = "Lexer/TestCase/AST/test4_AST.txt";
+        String SourceInputFile = "Lexer/TestCase/test6.txt";
+        String TokensOutputFile = "Lexer/TestCase/tokens/test6_tokens.txt";
+        String ASTOutputFile = "Lexer/TestCase/AST/test6_AST.txt";
 
         //构建词法分析器
         LexicalAnalyzer analyzer = new LexicalAnalyzer(SourceInputFile, TokensOutputFile);

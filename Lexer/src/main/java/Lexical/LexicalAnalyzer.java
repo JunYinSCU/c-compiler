@@ -385,6 +385,10 @@ public class LexicalAnalyzer {
 						lexemeBuffer.clear();
 						state = STATE_INITIAL;
 						index++;
+					}else{
+						error("非法字符:"+currentLine.charAt(index-1));
+						output.newLine();
+						lexemeBuffer.clear();
 					}
 					break;
 
