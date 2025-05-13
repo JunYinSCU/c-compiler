@@ -10,9 +10,9 @@ import Syntax.SyntaxParser;
 
 public class Main {
     public static void main(String[] args) throws ParserException, IOException {
-        String SourceInputFile = "Lexer/TestCase/test6.txt";
-        String TokensOutputFile = "Lexer/TestCase/tokens/test6_tokens.txt";
-        String ASTOutputFile = "Lexer/TestCase/AST/test6_AST.txt";
+        String SourceInputFile = "Lexer/TestCase/test0.txt";
+        String TokensOutputFile = "Lexer/TestCase/tokens/test0_tokens.txt";
+        String ASTOutputFile = "Lexer/TestCase/AST/test0_AST.txt";
 
         //构建词法分析器
         LexicalAnalyzer analyzer = new LexicalAnalyzer(SourceInputFile, TokensOutputFile);
@@ -21,6 +21,7 @@ public class Main {
         //获取词法分析器的token链表
         LinkedList<Token> tokens = analyzer.getTokens();
         //根据token列表构建语法分析器
+        System.out.print(SourceInputFile + " 分析结果：\n");
         SyntaxParser parser = new SyntaxParser(tokens);   
         //开始语法分析
         parser.parse();

@@ -20,6 +20,7 @@ public class LexicalAnalyzer {
 	private int column = 0;		//用于记录当前列号
 	private int commentRow = 0;		//用于记录注释开始行号
 	private int commentColumn = 0;		//用于记录注释开始列号
+	private boolean inMultilineComment = false;		//判断是否是多行注释
 
 	//获取分析得到的tokens列表
 	public LinkedList<Token> getTokens() {
@@ -53,7 +54,6 @@ public class LexicalAnalyzer {
 		}
 	}
 
-	private boolean inMultilineComment = false;		//判断是否是多行注释
 	private static final int STATE_INITIAL = 0;		//初始状态
 	private static final int STATE_IDENTIFIER = 1;	//关键词或者标识符
 	private static final int STATE_IDENTIFIER_END = 2;	//关键词或者标识符结束
@@ -119,7 +119,7 @@ public class LexicalAnalyzer {
 
 			while ((currentLine = bufferedReader.readLine()) != null) {
 				row++;			//新行，则行号增加
-				Analysis();		//对这一行进行词法分析
+				AnalyzeLexemes();		//对这一行进行词法分析
 			}
 		} finally {
 			if (bufferedReader != null)
@@ -138,7 +138,7 @@ public class LexicalAnalyzer {
 	}
 
 	//状态机分析
-	private void Analysis() throws IOException, ParserException {
+	private void AnalyzeLexemes() throws IOException, ParserException {
 		int state;	//用于判断当前状态
 
 		if(inMultilineComment){		//如果是在多行注释的状态，则起始状态为STATE_IN_COMMENT
