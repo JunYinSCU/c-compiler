@@ -1,0 +1,55 @@
+└── Program
+    └── declaration-list
+        └── declaration
+            └── fun-declaration
+                ├── type-specifier
+                |   └── void
+                ├── main
+                ├── (
+                ├── params
+                |   └── void
+                ├── )
+                └── compound-stmt
+                    ├── {
+                    ├── local-declarations
+                    |   └── var-declaration
+                    |       ├── type-specifier
+                    |       |   └── int
+                    |       ├── a
+                    |       └── ;
+                    ├── statement-list
+                    |   └── statement
+                    |       └── expression-stmt
+                    |           ├── expression
+                    |           |   ├── var
+                    |           |   |   └── a
+                    |           |   ├── =
+                    |           |   └── expression
+                    |           |       ├── var
+                    |           |       |   └── a
+                    |           |       └── simple-expression
+                    |           |           └── additive-expression
+                    |           |               ├── term
+                    |           |               |   ├── factor
+                    |           |               |   |   └── var
+                    |           |               |   |       └── a
+                    |           |               |   ├── mulop
+                    |           |               |   |   └── *
+                    |           |               |   ├── factor
+                    |           |               |   |   └── 4
+                    |           |               |   ├── mulop
+                    |           |               |   |   └── /
+                    |           |               |   └── factor
+                    |           |               |       └── 2
+                    |           |               ├── addop
+                    |           |               |   └── +
+                    |           |               ├── term
+                    |           |               |   └── factor
+                    |           |               |       └── 3
+                    |           |               ├── addop
+                    |           |               |   └── -
+                    |           |               └── term
+                    |           |                   └── factor
+                    |           |                       └── 1
+                    |           └── ;
+                    └── }

@@ -20,7 +20,10 @@
 < NUM , 5 , (row=9 , column=8) >
 < SEPARATOR , ; , (row=9 , column=9) >
 < COMMENT , 错误2:使用未声明的变量 , (row=11 , column=4) >
-< COMMENT , c = 1; , (row=12 , column=4) >
+< ID , c , (row=12 , column=4) >
+< OPERATOR , = , (row=12 , column=6) >
+< NUM , 1 , (row=12 , column=8) >
+< SEPARATOR , ; , (row=12 , column=9) >
 < COMMENT , 错误3: 缺少返回语句 , (row=14 , column=4) >
 < KEYWORD , return , (row=15 , column=4) >
 < ID , y , (row=15 , column=11) >

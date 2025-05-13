@@ -240,19 +240,6 @@
                     |   |   └── expression-stmt
                     |   |       ├── expression
                     |   |       |   ├── var
-                    |   |       |   |   └── x
-                    |   |       |   ├── =
-                    |   |       |   └── expression
-                    |   |       |       └── simple-expression
-                    |   |       |           └── additive-expression
-                    |   |       |               └── term
-                    |   |       |                   └── factor
-                    |   |       |                       └── 10
-                    |   |       └── ;
-                    |   ├── statement
-                    |   |   └── expression-stmt
-                    |   |       ├── expression
-                    |   |       |   ├── var
                     |   |       |   |   ├── y
                     |   |       |   |   ├── [
                     |   |       |   |   ├── expression

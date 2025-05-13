@@ -1,11 +1,11 @@
 void main(void){
 /*错误1:非法字符*/
-《
-
-/*错误2:非法字符*/
-!
+/*《 */
 
 int a;
+
+/*错误1:非法字符*/
+/* ！*/
 
 /* hello compiler!
 @author   YinJun

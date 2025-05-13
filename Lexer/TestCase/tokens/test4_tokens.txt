@@ -68,13 +68,7 @@
 < ID , a , (row=18 , column=9) >
 < SEPARATOR , ; , (row=18 , column=10) >
 < COMMENT , 错误1:函数参数个数不匹配 , (row=20 , column=2) >
-< ID , c , (row=21 , column=2) >
-< OPERATOR , = , (row=21 , column=4) >
-< ID , max , (row=21 , column=6) >
-< SEPARATOR , ( , (row=21 , column=9) >
-< NUM , 1 , (row=21 , column=10) >
-< SEPARATOR , ) , (row=21 , column=11) >
-< SEPARATOR , ; , (row=21 , column=12) >
+< COMMENT , c = max(1); , (row=21 , column=2) >
 < ID , a , (row=23 , column=2) >
 < OPERATOR , = , (row=23 , column=4) >
 < ID , add , (row=23 , column=6) >

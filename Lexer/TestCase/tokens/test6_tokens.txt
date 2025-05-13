@@ -6,4 +6,7 @@
 < SEPARATOR , { , (row=1 , column=15) >
 < COMMENT , 错误1:非法字符 , (row=2 , column=0) >
 < COMMENT , 《 , (row=3 , column=0) >
-< COMMENT , 错误2:非法字符 , (row=5 , column=0) >
+< KEYWORD , int , (row=5 , column=0) >
+< ID , a , (row=5 , column=4) >
+< SEPARATOR , ; , (row=5 , column=5) >
+< COMMENT , 错误1:非法字符 , (row=7 , column=0) >

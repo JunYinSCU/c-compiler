@@ -24,7 +24,7 @@ int main(void) {
   int anotherResult;
 
   /*错误1:缺少分号*/
-  x = 10
+  /* x = 10 */
 
   y[0] = x;
   
@@ -35,7 +35,7 @@ int main(void) {
   }
 
   /*错误2:使用了局部域的变量*/
-  /*localVar = 1;*/
+  /* localVar = 1; */
 
   if (x > 5) {
     x = x - 2;
@@ -55,7 +55,7 @@ int main(void) {
   }
 
   /*错误3:错误的运算*/
-  /*y = x + - 1;*/
+  /* y = x + - 1; */
 
   if (x <= 10) return 0;
   if (x < 10) return 0;

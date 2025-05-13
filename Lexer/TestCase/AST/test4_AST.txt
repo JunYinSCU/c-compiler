@@ -181,39 +181,6 @@
                     |   |       |                       └── var
                     |   |       |                           └── a
                     |   |       └── ;
-                    |   ├── statement
-                    |   |   └── expression-stmt
-                    |   |       ├── expression
-                    |   |       |   ├── var
-                    |   |       |   |   └── c
-                    |   |       |   ├── =
-                    |   |       |   └── expression
-                    |   |       |       ├── var
-                    |   |       |       |   └── max
-                    |   |       |       └── simple-expression
-                    |   |       |           └── additive-expression
-                    |   |       |               └── term
-                    |   |       |                   └── factor
-                    |   |       |                       └── call
-                    |   |       |                           ├── max
-                    |   |       |                           ├── (
-                    |   |       |                           ├── args
-                    |   |       |                           |   └── args-list
-                    |   |       |                           |       ├── expression
-                    |   |       |                           |       |   └── simple-expression
-                    |   |       |                           |       |       └── additive-expression
-                    |   |       |                           |       |           └── term
-                    |   |       |                           |       |               └── factor
-                    |   |       |                           |       |                   └── 1
-                    |   |       |                           |       ├── ,
-                    |   |       |                           |       └── expression
-                    |   |       |                           |           └── simple-expression
-                    |   |       |                           |               └── additive-expression
-                    |   |       |                           |                   └── term
-                    |   |       |                           |                       └── factor
-                    |   |       |                           |                           └── 1
-                    |   |       |                           └── )
-                    |   |       └── ;
                     |   └── statement
                     |       └── expression-stmt
                     |           ├── expression

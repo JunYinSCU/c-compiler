@@ -90,9 +90,7 @@
 < ID , anotherResult , (row=24 , column=6) >
 < SEPARATOR , ; , (row=24 , column=19) >
 < COMMENT , 错误1:缺少分号 , (row=26 , column=2) >
-< ID , x , (row=27 , column=2) >
-< OPERATOR , = , (row=27 , column=4) >
-< NUM , 10 , (row=27 , column=6) >
+< COMMENT , x = 10 , (row=27 , column=2) >
 < ID , y , (row=29 , column=2) >
 < SEPARATOR , [ , (row=29 , column=3) >
 < NUM , 0 , (row=29 , column=4) >
